@@ -67,6 +67,9 @@ class Programme:
         else:
             self.modules = []
 
+    def modules_for_year(self, year):
+        return [m for m in self.modules if int(m.year) == int(year)]
+
     def to_dict(self):
             return {
                 "programme_code": self.programme_code,
@@ -125,6 +128,10 @@ class Requests:
             self.availability.remove(timeslot)
             return True
         return False
+
+    def overlapping_availability(self, other):
+        return [s for s in self.availability if s in other.availability]
+
 
     def to_dict(self):
         return self.__dict__

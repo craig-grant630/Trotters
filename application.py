@@ -77,3 +77,9 @@ class StudyBuddyApp:
             if request.request_id == request_id:
                 return request
         return None
+
+    def campus_name(self, campus_code):
+        for campus in self.campuses.values():
+            if campus.campus_code == campus_code:
+                return campus.name
+        return None
