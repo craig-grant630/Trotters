@@ -1,0 +1,18 @@
+[
+    {
+        "student_id": "1000000000",
+        "name": "Craig Grant",
+        "programme_code": "BAENT",
+        "campus_code": "PCK",
+        "year_of_study": "1",
+        "password": "Belly1234"
+    },
+    {
+        "student_id": "1100000000",
+        "name": "Iain Grant",
+        "programme_code": "BANAV",
+        "campus_code": "PCK",
+        "year_of_study": "2",
+        "password": "Belly1234"
+    }
+]

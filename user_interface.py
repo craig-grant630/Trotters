@@ -414,6 +414,7 @@ class AddEditRequest(tk.Frame):
         super().__init__(parent, bg=BG_COLOUR)
         self.pack(fill="both", expand=True, pady=(40, 40), padx=20)
         self.ui = ui
+        self.availability = []
         if request is not None:
             self.request = request
             mode = "Edit Request"
@@ -423,8 +424,52 @@ class AddEditRequest(tk.Frame):
         # HEADER
         InternalHeader(self, ui, f"{mode}")
 
-        row1 = tk.Frame(self, bg=BG_COLOUR3)
-        row1.pack(fill="both", pady=(0,5))
+        row1 = tk.Frame(self, bg=BG_COLOUR)
+        row1.pack(fill="both", expand=True)
+
+        left_side_frame = card(row1, bg=BG_COLOUR2)
+        left_side_frame.pack(side="left", fill="both", expand=True)
+
+        styled_label(left_side_frame, mode, font=FONT_BUTTON, fg=ACCENT).pack(anchor="w")
+        separator(left_side_frame, bg=ACCENT).pack(fill="x", pady=8, padx=10)
+
+        student = self.ui.user
+        form = tk.Frame(left_side_frame, bg=BG_COLOUR2)
+        form.pack(anchor="w")
+
+        camp_opt = []
+        for c in self.ui.app.campuses.values():
+            camp_opt.append(f"{c.campus_code} - {c.name}")
+
+        styled_label(form, "Campus", bg=BG_COLOUR2, width=14, anchor="e").grid(row=0, column=0, padx=8, pady=6)
+        self.campus_cb = styled_combobox(form, camp_opt, width=30)
+        self.campus_cb.grid(row=0, column=1, pady=6, sticky="w")
+
+        prog = self.ui.app.programmes.get(student.programme_code)
+        prog_label = f"{student.programme_code} - {prog.name}"
+
+        if len(prog.campus_codes) ==1:
+            self.campus_cb.set(f"{student.campus_code} - {self.ui.app.campus_name(student.campus_code)}")
+            self.campus_cb.config(state="disabled")
+
+        styled_label(form, "Programme", bg=BG_COLOUR2, width=14, anchor="e").grid(row=1, column=0, padx=8, pady=6)
+        self.programme_cb = styled_combobox(form, [prog_label], width=30)
+        self.programme_cb.grid(row=1, column=1, pady=6, sticky="w")
+        self.programme_cb.set(prog_label)
+        self.programme_cb.config(state="disabled")
+
+        styled_label(form, "Year of Study", bg=BG_COLOUR2, width=14, anchor="e").grid(row=2, column=0, padx=8, pady=6)
+        self.year_cb = styled_combobox(form, [str(student.year_of_study)], width=6)
+        self.year_cb.grid(row=2, column=1, pady=6, sticky="w")
+        self.year_cb.set(str(student.year_of_study))
+        self.year_cb.config(state="disabled")
+
+        year_mods = prog.modules_for_year(student.year_of_study)
+        mod_opts = [f"{m.module_code} - {m.name}" for m in year_mods]
+
+        styled_label(form, "Module", bg=BG_COLOUR2, width=14, anchor="e").grid(row=3, column=0, padx=8, pady=6)
+        self.module_cb = styled_combobox(form, mod_opts, width=30)
+        self.module_cb.grid(row=3, column=1, pady=6, sticky="w")
 
 if __name__=="__main__":
     StudyBuddyUI()
