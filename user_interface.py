@@ -65,7 +65,7 @@ def styled_combobox(parent, options, width, **kwargs):
 def separator(parent, bg=BORDER):
     return tk.Frame(parent, bg=bg, height=1)
 
-def styled_dashboard_treeview(parent):
+def styled_treeview(parent, columns, headings, widths):
     style = ttk.Style()
     style.theme_use('clam')
 
@@ -76,21 +76,14 @@ def styled_dashboard_treeview(parent):
     style.configure("Dark.Treeview.Heading",background=BG_COLOUR3,foreground="white",
                     font=("Helvetica",10, "bold"),rowheight=35,borderwidth=0,relief="flat")
     style.map("Dark.Treeview.Heading",background=[('active', BG_COLOUR3)],foreground=[('active', ACCENT)])
-    tree = ttk.Treeview(parent, columns=("module","campus","year","available"), style="Dark.Treeview")
-    tree.heading("#0", text="ID")
-    tree.heading("module", text="Module Code")
-    tree.heading("campus", text="Campus Code")
-    tree.heading("year", text="Year")
-    tree.heading("available", text="# Availabilities")
 
-    tree.column("#0", width=40, anchor="center")
-    tree.column("module", width=120, anchor="center")
-    tree.column("campus", width=120, anchor="center")
-    tree.column("year", width=90, anchor="center")
-    tree.column("available", width=90, anchor="center")
-    tree.pack(fill="both", expand=True)
+    tree = ttk.Treeview(parent, columns=columns, style="Dark.Treeview", show="headings")
+
+    for col, heading, width in zip(columns, headings, widths):
+        tree.heading(col, text=heading)
+        tree.column(col, width=width, anchor="center")
+
     return tree
-
 #============================================================================================================
 # Initial setup of root container - configure title and size of window, instantiate Studdy Buddy App and set user
 # Contains methods for clearing and switching frame logic
@@ -373,7 +366,8 @@ class Dashboard(tk.Frame):
         styled_label(right_side_frame, "My Match Requests", font=FONT_BUTTON, fg=ACCENT).pack(anchor="w")
         separator(right_side_frame, bg=ACCENT).pack(fill="x", pady=8, padx=10)
 
-        self.treeview = styled_dashboard_treeview(right_side_frame)
+        self.treeview = styled_treeview(right_side_frame, ["id", "module", "campus", "year", "slots"],["#", "Module","Campus","Year", "Slots"],[40, 120,120,90,90])
+        self.treeview.pack(fill="both", expand=True)
         self.refresh_dashboard_treeview()
 
     def refresh_dashboard_treeview(self):
@@ -381,9 +375,10 @@ class Dashboard(tk.Frame):
             self.treeview.delete(item)
         if not self.requests:
             self.treeview.insert("","end",iid="none", values=("No requests yet", "","","",""))
+            return
         for item in self.requests:
             self.treeview.insert("","end",iid=str(item.request_id),text=f"{item.request_id}",
-                                 values=(f"{item.module_code}",item.campus_code, f"Year {item.year}",
+                                 values=(str(item.request_id), f"{item.module_code}",item.campus_code, f"Year {item.year}",
                                          len(item.availability)))
 
     def selection_treeview(self):
@@ -426,7 +421,8 @@ class AddEditRequest(tk.Frame):
 
         row1 = tk.Frame(self, bg=BG_COLOUR)
         row1.pack(fill="both", expand=True)
-
+#==============================================================================================
+        # LEFT FORM DROPDOWNS
         left_side_frame = card(row1, bg=BG_COLOUR2)
         left_side_frame.pack(side="left", fill="both", expand=True)
 
@@ -470,6 +466,16 @@ class AddEditRequest(tk.Frame):
         styled_label(form, "Module", bg=BG_COLOUR2, width=14, anchor="e").grid(row=3, column=0, padx=8, pady=6)
         self.module_cb = styled_combobox(form, mod_opts, width=30)
         self.module_cb.grid(row=3, column=1, pady=6, sticky="w")
+#==========================================================================================================================
+        #RIGHT SIDE DROPDOWNS AND TREEVIEW
+        right_side_frame = card(row1, bg=BG_COLOUR2)
+        right_side_frame.pack(fill="both", expand=True, side="right")
+
+        styled_label(right_side_frame, "Availability Timeslots", font=FONT_BUTTON, fg=ACCENT).pack(anchor="w")
+        separator(right_side_frame, bg=ACCENT).pack(fill="x", pady=8, padx=10)
+
+        styled_label(right_side_frame, "Add the days and times you are free to meet", font=FONT_SMALL, fg=FG_COLOUR2, bg=BG_COLOUR2).pack(anchor="w", pady=(0,8))
+
 
 if __name__=="__main__":
     StudyBuddyUI()
