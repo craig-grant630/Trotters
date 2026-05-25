@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from application import StudyBuddyApp
+from classes import VALID_DAYS, VALID_PERIODS
 
 # Styling references
 # https://www.pythontutorial.net/tkinter/ttk-style/
@@ -413,6 +414,7 @@ class AddEditRequest(tk.Frame):
         if request is not None:
             self.request = request
             mode = "Edit Request"
+            self.availability = list(request.availability)
         else:
             mode = "Add Request"
 
@@ -476,6 +478,41 @@ class AddEditRequest(tk.Frame):
 
         styled_label(right_side_frame, "Add the days and times you are free to meet", font=FONT_SMALL, fg=FG_COLOUR2, bg=BG_COLOUR2).pack(anchor="w", pady=(0,8))
 
+        slot_row = tk.Frame(right_side_frame, bg=BG_COLOUR2)
+        slot_row.pack(anchor="w",pady=4)
+
+        self.day_cb = styled_combobox(slot_row, VALID_DAYS, width=10)
+        self.day_cb.pack(side="left", padx=(0,8))
+
+        self.period_cb = styled_combobox(slot_row, VALID_PERIODS, width=10)
+        self.period_cb.pack(side="left", padx=(0,8))
+
+        tk.Button(slot_row, text="Add", bg="green", fg=FG_COLOUR, width=6, relief="flat", font=("Helvetica", 10, "bold")).pack(side="left")
+
+        self.timeslot_treeview = styled_treeview(right_side_frame,["day","period"], ["Day", "Period"], [10,15])
+        self.timeslot_treeview.pack(fill="both", expand=True, pady=8)
+
+
+        tk.Button(right_side_frame, text="Remove Selected", bg="red",fg=FG_COLOUR, relief="flat", font=("Helvetica", 10, "bold"), command=self.remove_request_treeview).pack(pady=4)
+        self.refresh_request_form()
+
+    def refresh_request_form(self):
+        for item in self.timeslot_treeview.get_children():
+            self.timeslot_treeview.delete(item)
+        if not self.availability:
+            self.timeslot_treeview.insert("", "end", iid="none", values=("No timeslots yet", ""))
+            return
+        for index, item in enumerate(self.availability):
+            self.timeslot_treeview.insert("", "end", iid=str(index),
+                                 values=(item['day'], item['period']))
+
+    def remove_request_treeview(self):
+        selection = self.timeslot_treeview.selection()
+        if not selection or selection[0] == "none":
+            return
+        idx = int(selection[0])
+        del self.availability[idx]
+        self.refresh_request_form()
 
 if __name__=="__main__":
     StudyBuddyUI()
