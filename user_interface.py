@@ -375,7 +375,7 @@ class Dashboard(tk.Frame):
         for item in self.treeview.get_children():
             self.treeview.delete(item)
         if not self.requests:
-            self.treeview.insert("","end",iid="none", values=("No requests yet", "","","",""))
+            self.treeview.insert("","end",iid="none", values=("", "No requests yet","","",""))
             return
         for item in self.requests:
             self.treeview.insert("","end",iid=str(item.request_id),text=f"{item.request_id}",
@@ -468,6 +468,16 @@ class AddEditRequest(tk.Frame):
         styled_label(form, "Module", bg=BG_COLOUR2, width=14, anchor="e").grid(row=3, column=0, padx=8, pady=6)
         self.module_cb = styled_combobox(form, mod_opts, width=30)
         self.module_cb.grid(row=3, column=1, pady=6, sticky="w")
+
+        if request:
+            save_button = tk.Button(form, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Save", width=7)
+            save_button.grid(row=4, column=1, padx=3, pady=(20,0), sticky="w")
+        else:
+            add_button = tk.Button(form, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Add Request", width=12)
+            add_button.grid(row=4, column=1, padx=3, pady=(20, 0), sticky="w")
+
+        cancel_button = tk.Button(form, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Cancel", width=7, command=self.ui.show_dashboard)
+        cancel_button.grid(row=4, column=1, padx=3, pady=(20, 0))
 #==========================================================================================================================
         #RIGHT SIDE DROPDOWNS AND TREEVIEW
         right_side_frame = card(row1, bg=BG_COLOUR2)
@@ -487,13 +497,12 @@ class AddEditRequest(tk.Frame):
         self.period_cb = styled_combobox(slot_row, VALID_PERIODS, width=10)
         self.period_cb.pack(side="left", padx=(0,8))
 
-        tk.Button(slot_row, text="Add", bg="green", fg=FG_COLOUR, width=6, relief="flat", font=("Helvetica", 10, "bold")).pack(side="left")
+        tk.Button(slot_row, text="Add", bg="green", fg=FG_COLOUR, width=6, relief="flat", font=("Helvetica", 10, "bold"), command=self.add_availability_treeview).pack(side="left")
 
         self.timeslot_treeview = styled_treeview(right_side_frame,["day","period"], ["Day", "Period"], [10,15])
         self.timeslot_treeview.pack(fill="both", expand=True, pady=8)
 
-
-        tk.Button(right_side_frame, text="Remove Selected", bg="red",fg=FG_COLOUR, relief="flat", font=("Helvetica", 10, "bold"), command=self.remove_request_treeview).pack(pady=4)
+        tk.Button(right_side_frame, text="Remove Selected", bg="red", fg=FG_COLOUR, relief="flat", font=("Helvetica", 10, "bold"), command=self.remove_availability_treeview).pack(pady=4)
         self.refresh_request_form()
 
     def refresh_request_form(self):
@@ -506,13 +515,27 @@ class AddEditRequest(tk.Frame):
             self.timeslot_treeview.insert("", "end", iid=str(index),
                                  values=(item['day'], item['period']))
 
-    def remove_request_treeview(self):
+    def remove_availability_treeview(self):
         selection = self.timeslot_treeview.selection()
         if not selection or selection[0] == "none":
             return
         idx = int(selection[0])
         del self.availability[idx]
         self.refresh_request_form()
+
+    def add_availability_treeview(self):
+        day = self.day_cb.get()
+        period = self.period_cb.get()
+        if not day or not period:
+            messagebox.showerror("Error", "Please select a day and period in order to add availability")
+            return
+        slot = {"day": day, "period": period}
+        if slot in self.availability:
+            messagebox.showerror("Error", "Availability already added")
+            return
+        self.availability.append(slot)
+        self.refresh_request_form()
+
 
 if __name__=="__main__":
     StudyBuddyUI()
