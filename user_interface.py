@@ -355,7 +355,7 @@ class Dashboard(tk.Frame):
                                font=("Helvetica", 10, "bold"), width=15, command=self.edit_request)
         edit_button.pack(pady=3)
         delete_button = tk.Button(left_side_frame, bg=BG_COLOUR3, fg=FG_COLOUR, relief="flat", text="Delete Request",
-                               font=("Helvetica", 10, "bold"), width=15)
+                               font=("Helvetica", 10, "bold"), width=15, command=self.delete_request)
         delete_button.pack(pady=3)
         matches_button = tk.Button(left_side_frame, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Find Matches",
                                   font=("Helvetica", 10, "bold"), width=15)
@@ -374,13 +374,18 @@ class Dashboard(tk.Frame):
     def refresh_dashboard_treeview(self):
         for item in self.treeview.get_children():
             self.treeview.delete(item)
-        if not self.requests:
-            self.treeview.insert("","end",iid="none", values=("", "No requests yet","","",""))
+
+        student_requests = self.ui.app.get_requests_for_student(self.ui.user.student_id)
+
+        if not student_requests:
+            self.treeview.insert("", "end", iid="none", values=("", "No requests yet", "", "", ""))
             return
-        for item in self.requests:
-            self.treeview.insert("","end",iid=str(item.request_id),text=f"{item.request_id}",
-                                 values=(str(item.request_id), f"{item.module_code}",item.campus_code, f"Year {item.year}",
-                                         len(item.availability)))
+
+        for item in student_requests:
+            slots_count = f"{len(item.availability)} slots" if hasattr(item, 'availability') else "0 slots"
+
+            self.treeview.insert("","end",iid=str(item.request_id),
+                values=(str(item.request_id),f"{item.module_code}",item.campus_code,f"Year {item.year}",slots_count))
 
     def selection_treeview(self):
         selection = self.treeview.selection()
@@ -400,7 +405,17 @@ class Dashboard(tk.Frame):
         self.ui.show_request_form(r_obj)
 
     def delete_request(self):
-        pass
+        request = self.selection_treeview()
+        if not request:
+            messagebox.showwarning("Warning", "No requests selected")
+            return
+        if not messagebox.askyesno("Delete Request", f"Are you sure you want to delete request ID: {request.request_id}?"):
+            return
+        valid, error = self.ui.app.delete_request(request.request_id, self.ui.user.student_id)
+        if valid:
+            self.refresh_dashboard_treeview()
+        else:
+            messagebox.showwarning("Warning", "Could not delete request")
 
     def find_matches(self):
         pass

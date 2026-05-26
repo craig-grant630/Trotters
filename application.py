@@ -126,7 +126,6 @@ class StudyBuddyApp:
         if student_year is None:
             return False, "ERROR: Student year of study data missing"
 
-        # Validation 1: Verify module tracking
         year_modules = [m.module_code.upper().strip() for m in prog.modules_for_year(int(student_year))]
         if module.upper().strip() not in year_modules:
             return False, f"ERROR: Module {module} is not valid for your year of study"
@@ -145,6 +144,20 @@ class StudyBuddyApp:
         self.store.requests_save(self.requests)
 
         return True, request
+
+    def delete_request(self, request_id, student_id):
+        request = self.get_request_by_id(request_id)
+        if not request:
+            return False, "ERROR: Request not found"
+        if request.student_id != student_id:
+            return False, "ERROR: You can only delete your own request"
+        if request_id in self.requests:
+            del self.requests[request_id]
+
+        self.store.requests_save(self.requests)
+        return True, "Request deleted successfully"
+
+
 
 
 
