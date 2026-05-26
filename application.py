@@ -83,3 +83,37 @@ class StudyBuddyApp:
             if campus.campus_code == campus_code:
                 return campus.name
         return None
+
+    def edit_request(self, request_id, student_id, campus, module, availability):
+        request = self.get_request_by_id(request_id)
+        if not request:
+            return False, "Request not found"
+
+        if request.student_id != student_id:
+            return False, "ERROR: You can only edit your own request"
+
+        prog = self.programmes.get(request.programme_code)
+        if not prog:
+            return False, "ERROR: Associated programme not found"
+
+        year_modules = [m.module_code.upper() for m in prog.modules_for_year(int(request.year))]
+        if module.upper().strip() not in year_modules:
+            print(f"DEBUG: Checking for parsed module '{module.upper().strip()}' inside list: {year_modules}")
+            return False, f"ERROR: Module {module} is not valid for your year of study"
+
+        if campus.upper().strip() not in prog.campus_codes:
+            return False, "ERROR: Campus is not available for this programme"
+
+        if not availability:
+            return False, "ERROR: One availability timeslot at least is required"
+
+        request.module_code = module.upper()
+        request.campus_code = campus
+        request.availability = list(availability)
+
+        self.store.requests_save(self.requests)
+        return True, request
+
+
+
+

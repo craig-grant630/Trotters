@@ -417,6 +417,7 @@ class AddEditRequest(tk.Frame):
             self.availability = list(request.availability)
         else:
             mode = "Add Request"
+            self.request = None
 
         # HEADER
         InternalHeader(self, ui, f"{mode}")
@@ -469,15 +470,17 @@ class AddEditRequest(tk.Frame):
         self.module_cb = styled_combobox(form, mod_opts, width=30)
         self.module_cb.grid(row=3, column=1, pady=6, sticky="w")
 
+        self.msg = tk.StringVar()
+        tk.Label(form, textvariable=self.msg, bg=BG_COLOUR2, fg="red", wraplength=200).grid(row=4, column=1, pady=8, sticky="w")
         if request:
-            save_button = tk.Button(form, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Save", width=7)
-            save_button.grid(row=4, column=1, padx=3, pady=(20,0), sticky="w")
+            save_button = tk.Button(form, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Save", width=7, command=self.submit)
+            save_button.grid(row=5, column=1, padx=3, pady=(20,0), sticky="w")
         else:
             add_button = tk.Button(form, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Add Request", width=12)
-            add_button.grid(row=4, column=1, padx=3, pady=(20, 0), sticky="w")
+            add_button.grid(row=5, column=1, padx=3, pady=(20, 0), sticky="w")
 
         cancel_button = tk.Button(form, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Cancel", width=7, command=self.ui.show_dashboard)
-        cancel_button.grid(row=4, column=1, padx=3, pady=(20, 0))
+        cancel_button.grid(row=5, column=1, padx=3, pady=(20, 0))
 #==========================================================================================================================
         #RIGHT SIDE DROPDOWNS AND TREEVIEW
         right_side_frame = card(row1, bg=BG_COLOUR2)
@@ -536,6 +539,26 @@ class AddEditRequest(tk.Frame):
         self.availability.append(slot)
         self.refresh_request_form()
 
+    def submit(self):
+        self.msg.set("")
+        student = self.ui.user
+        campus = self.campus_cb.get().strip().split("-")[0]
+        module = self.module_cb.get().strip().split("-")[0]
+        print(module)
+        if not campus or not module:
+            self.msg.set("Please select a campus and module")
+            return
+        if not self.availability:
+            self.msg.set("Please add at least 1 availability")
+            return
+
+        if self.request:
+            valid, result = self.ui.app.edit_request(self.request.request_id, student.student_id,
+                                                     campus, module, self.availability)
+            if valid:
+                self.ui.show_dashboard()
+            else:
+                self.msg.set(result)
 
 if __name__=="__main__":
     StudyBuddyUI()
