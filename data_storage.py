@@ -108,6 +108,12 @@ class FileHandler:
             result[r_key] = r_object
         return result
 
+    @staticmethod
+    def next_request_id(requests):
+        if not requests:
+            return 1
+        else:
+            return max(r.request_id for r in requests.values()) + 1
 #=======================================================================================================================
     # Check if required data and starting data is required methods
     def required_campus_data_needed(self):
@@ -173,10 +179,10 @@ class FileHandler:
         bnaval_modules = [Module("BNAV11", "Royal Navy", 1),
                           Module("BNAV11", "Historic Naval Ships", 1),
                           Module("BNAV11", "Strategic Naval Decisions", 1),
-                          Module("BNAV11", "WW2 Commanding Officers", 1),
-                          Module("BNAV11", "Historical Research", 1),
-                          Module("BNAV11", "Engineering of Naval Ships", 1),
-                          Module("BNAV11", "Navy Project", 1),]
+                          Module("BNAV21", "WW2 Commanding Officers", 2),
+                          Module("BNAV21", "Historical Research", 2),
+                          Module("BNAV21", "Engineering of Naval Ships", 2),
+                          Module("BNAV31", "Navy Project", 3),]
 
         programmes = {
             "BAENT": Programme("BAENT","BA Entrepreneurship", all_campuses, baent_modules),

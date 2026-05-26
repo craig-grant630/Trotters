@@ -463,7 +463,7 @@ class AddEditRequest(tk.Frame):
         self.year_cb.set(str(student.year_of_study))
         self.year_cb.config(state="disabled")
 
-        year_mods = prog.modules_for_year(student.year_of_study)
+        year_mods = prog.modules_for_year(int(student.year_of_study))
         mod_opts = [f"{m.module_code} - {m.name}" for m in year_mods]
 
         styled_label(form, "Module", bg=BG_COLOUR2, width=14, anchor="e").grid(row=3, column=0, padx=8, pady=6)
@@ -476,7 +476,7 @@ class AddEditRequest(tk.Frame):
             save_button = tk.Button(form, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Save", width=7, command=self.submit)
             save_button.grid(row=5, column=1, padx=3, pady=(20,0), sticky="w")
         else:
-            add_button = tk.Button(form, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Add Request", width=12)
+            add_button = tk.Button(form, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Add Request", width=12, command=self.submit)
             add_button.grid(row=5, column=1, padx=3, pady=(20, 0), sticky="w")
 
         cancel_button = tk.Button(form, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Cancel", width=7, command=self.ui.show_dashboard)
@@ -555,6 +555,15 @@ class AddEditRequest(tk.Frame):
         if self.request:
             valid, result = self.ui.app.edit_request(self.request.request_id, student.student_id,
                                                      campus, module, self.availability)
+            if valid:
+                self.ui.show_dashboard()
+            else:
+                self.msg.set(result)
+
+        if not self.request:
+            valid, result = self.ui.app.add_request(student.student_id, student.programme_code,
+                                                     campus, module, self.availability)
+
             if valid:
                 self.ui.show_dashboard()
             else:

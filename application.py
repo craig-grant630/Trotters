@@ -1,5 +1,5 @@
 from data_storage import FileHandler
-from classes import Student
+from classes import Student, Requests
 
 class StudyBuddyApp:
     def __init__(self):
@@ -98,7 +98,6 @@ class StudyBuddyApp:
 
         year_modules = [m.module_code.upper() for m in prog.modules_for_year(int(request.year))]
         if module.upper().strip() not in year_modules:
-            print(f"DEBUG: Checking for parsed module '{module.upper().strip()}' inside list: {year_modules}")
             return False, f"ERROR: Module {module} is not valid for your year of study"
 
         if campus.upper().strip() not in prog.campus_codes:
@@ -113,6 +112,40 @@ class StudyBuddyApp:
 
         self.store.requests_save(self.requests)
         return True, request
+
+    def add_request(self, student_id, programme, campus, module, availability):
+        student = self.students.get(student_id)
+        if not student:
+            return False, "ERROR: Student profile records not found"
+
+        prog = self.programmes.get(programme.upper())
+        if not prog:
+            return False, f"ERROR: Programme '{programme}' does not exist"
+
+        student_year = getattr(student, 'year', getattr(student, 'year_of_study', None))
+        if student_year is None:
+            return False, "ERROR: Student year of study data missing"
+
+        # Validation 1: Verify module tracking
+        year_modules = [m.module_code.upper().strip() for m in prog.modules_for_year(int(student_year))]
+        if module.upper().strip() not in year_modules:
+            return False, f"ERROR: Module {module} is not valid for your year of study"
+
+        if campus.upper().strip() not in [c.upper().strip() for c in prog.campus_codes]:
+            return False, "ERROR: Campus is not available for this programme"
+
+        if not availability:
+            return False, "ERROR: One availability timeslot at least is required"
+
+        # Create and save item structure
+        request_id = self.store.next_request_id(self.requests)
+
+        request = Requests(request_id,student_id,campus.upper().strip(),programme.upper(),int(student_year),module.upper().strip(),list(availability))
+        self.requests[request_id] = request
+        self.store.requests_save(self.requests)
+
+        return True, request
+
 
 
 
