@@ -1,13 +1,30 @@
 [
     {
-        "request_id": 1,
-        "student_id": "1000000000",
+        "request_id": 3,
+        "student_id": "1100000000",
         "campus_code": "PCK",
-        "programme_code": "BAENT",
+        "programme_code": "BANAV",
         "year": 2,
-        "module_code": "BENT11",
-        "availability": [{
-            "day": "Monday", "period" : "Afternoon"
-        }]
+        "module_code": "BNAV23",
+        "availability": [
+            {
+                "day": "Thursday",
+                "period": "Afternoon"
+            }
+        ]
+    },
+    {
+        "request_id": 4,
+        "student_id": "1000000000",
+        "campus_code": "NYC",
+        "programme_code": "BAENT",
+        "year": 1,
+        "module_code": "BENT12",
+        "availability": [
+            {
+                "day": "Tuesday",
+                "period": "Evening"
+            }
+        ]
     }
 ]

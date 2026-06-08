@@ -196,34 +196,34 @@
                 "year": 1
             },
             {
-                "module_code": "BNAV11",
+                "module_code": "BNAV12",
                 "name": "Historic Naval Ships",
                 "year": 1
             },
             {
-                "module_code": "BNAV11",
+                "module_code": "BNAV13",
                 "name": "Strategic Naval Decisions",
                 "year": 1
             },
             {
-                "module_code": "BNAV11",
+                "module_code": "BNAV21",
                 "name": "WW2 Commanding Officers",
-                "year": 1
+                "year": 2
             },
             {
-                "module_code": "BNAV11",
+                "module_code": "BNAV22",
                 "name": "Historical Research",
-                "year": 1
+                "year": 2
             },
             {
-                "module_code": "BNAV11",
+                "module_code": "BNAV23",
                 "name": "Engineering of Naval Ships",
-                "year": 1
+                "year": 2
             },
             {
-                "module_code": "BNAV11",
+                "module_code": "BNAV31",
                 "name": "Navy Project",
-                "year": 1
+                "year": 3
             }
         ]
     }
