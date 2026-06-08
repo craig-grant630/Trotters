@@ -64,6 +64,7 @@ class StudyBuddyApp:
             return True, student
 
 # Request lookups by student ID and request ID
+# Request CRUD methods
 #=======================================================================================================================
     def get_requests_for_student(self, student_id):
         result=[]
@@ -76,12 +77,6 @@ class StudyBuddyApp:
         for request in self.requests.values():
             if request.request_id == request_id:
                 return request
-        return None
-
-    def campus_name(self, campus_code):
-        for campus in self.campuses.values():
-            if campus.campus_code == campus_code:
-                return campus.name
         return None
 
     def edit_request(self, request_id, student_id, campus, module, availability):
@@ -156,10 +151,17 @@ class StudyBuddyApp:
 
         self.store.requests_save(self.requests)
         return True, "Request deleted successfully"
+# ======================================================================================================================
+    def campus_name(self, campus_code):
+        for campus in self.campuses.values():
+            if campus.campus_code == campus_code:
+                return campus.name
+        return None
 
-
-
-
+# Find Match results
+#===================================================
+    def find_matches(self, request_id):
+        pass
 
 
 

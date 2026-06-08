@@ -126,6 +126,10 @@ class StudyBuddyUI:
         self.clear()
         AddEditRequest(self.container, self, request)
 
+    def show_request_matches(self, request):
+        self.clear()
+        RequestResults(self.container, self, request)
+
 # =====================================================================================
 # Header frames used withing main frames of application
 class WelcomeHeader(tk.Frame):
@@ -358,7 +362,7 @@ class Dashboard(tk.Frame):
                                font=("Helvetica", 10, "bold"), width=15, command=self.delete_request)
         delete_button.pack(pady=3)
         matches_button = tk.Button(left_side_frame, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Find Matches",
-                                  font=("Helvetica", 10, "bold"), width=15)
+                                  font=("Helvetica", 10, "bold"), width=15, command=self.find_matches)
         matches_button.pack(side="bottom")
         #===============================================================================================================
         right_side_frame = card(row2, bg=BG_COLOUR2)
@@ -418,7 +422,11 @@ class Dashboard(tk.Frame):
             messagebox.showwarning("Warning", "Could not delete request")
 
     def find_matches(self):
-        pass
+        r_obj = self.selection_treeview()
+        if not r_obj:
+            messagebox.showwarning("Warning", "No requests selected")
+            return
+        self.ui.show_request_matches(r_obj)
 
 class AddEditRequest(tk.Frame):
     def __init__(self, parent, ui, request=None):
@@ -559,12 +567,11 @@ class AddEditRequest(tk.Frame):
         student = self.ui.user
         campus = self.campus_cb.get().strip().split("-")[0]
         module = self.module_cb.get().strip().split("-")[0]
-        print(module)
         if not campus or not module:
             self.msg.set("Please select a campus and module")
             return
         if not self.availability:
-            self.msg.set("Please add at least 1 availability")
+            self.msg.set("Please add at least one availability")
             return
 
         if self.request:
@@ -583,6 +590,28 @@ class AddEditRequest(tk.Frame):
                 self.ui.show_dashboard()
             else:
                 self.msg.set(result)
+
+class RequestResults(tk.Frame):
+    def __init__(self, parent, ui, request):
+        super().__init__(parent, bg=BG_COLOUR)
+        self.pack(fill="both", expand=True, pady=(40, 40), padx=20)
+        self.ui = ui
+        self.request = request
+
+        student = self.ui.user
+        # ===============================================================================================================
+        # HEADER
+        InternalHeader(self, ui, f"Dashboard")
+
+        row1 = tk.Frame(self, bg=BG_COLOUR3)
+        row1.pack(fill="x")
+        styled_label(row1, f"Source Request: #{request.request_id} | {request.module_code} | {request.campus_code}", bg=BG_COLOUR3, fg=FG_COLOUR2, font=FONT_SMALL).pack(pady=10, padx=10, side="left")
+        # =========================================================================================
+
+        row2 = tk.Frame(self, bg=BG_COLOUR2)
+        row2.pack(fill="both", expand=True)
+
+        # find matches using application function
 
 if __name__=="__main__":
     StudyBuddyUI()
