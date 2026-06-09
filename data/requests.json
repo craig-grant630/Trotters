@@ -1,29 +1,69 @@
 [
     {
-        "request_id": 3,
-        "student_id": "1100000000",
+        "request_id": 1,
+        "student_id": "1111111111",
         "campus_code": "PCK",
         "programme_code": "BANAV",
-        "year": 2,
-        "module_code": "BNAV23",
+        "year": 1,
+        "module_code": "BNAV12",
         "availability": [
             {
-                "day": "Thursday",
+                "day": "Monday",
+                "period": "Afternoon"
+            },
+            {
+                "day": "Tuesday",
+                "period": "Afternoon"
+            }
+        ]
+    },
+    {
+        "request_id": 2,
+        "student_id": "1111100000",
+        "campus_code": "PCK",
+        "programme_code": "BAMKT",
+        "year": 2,
+        "module_code": "BMKT21",
+        "availability": [
+            {
+                "day": "Monday",
+                "period": "Afternoon"
+            }
+        ]
+    },
+    {
+        "request_id": 3,
+        "student_id": "1111100000",
+        "campus_code": "NYC",
+        "programme_code": "BAMKT",
+        "year": 2,
+        "module_code": "BMKT21",
+        "availability": [
+            {
+                "day": "Monday",
+                "period": "Afternoon"
+            },
+            {
+                "day": "Tuesday",
                 "period": "Afternoon"
             }
         ]
     },
     {
         "request_id": 4,
-        "student_id": "1000000000",
-        "campus_code": "NYC",
-        "programme_code": "BAENT",
-        "year": 1,
-        "module_code": "BENT12",
+        "student_id": "1111111100",
+        "campus_code": "PCK",
+        "programme_code": "BAMKT",
+        "year": 2,
+        "module_code": "BMKT21",
         "availability": [
             {
-                "day": "Tuesday",
-                "period": "Evening"
+                "day": "Monday",
+                "period": "Afternoon"
+            },
+            {
+                "day": "Wednesday",
+                "period": "Afternoon"
             }
         ]
     }

@@ -1,18 +1,66 @@
 [
     {
-        "student_id": "1000000000",
+        "student_id": "1110000000",
         "name": "Craig Grant",
         "programme_code": "BAENT",
+        "campus_code": "PCK",
+        "year_of_study": "3",
+        "password": "Belly1234"
+    },
+    {
+        "student_id": "1111000000",
+        "name": "Iain Grant",
+        "programme_code": "BSCSC",
         "campus_code": "PCK",
         "year_of_study": "1",
         "password": "Belly1234"
     },
     {
-        "student_id": "1100000000",
-        "name": "Iain Grant",
+        "student_id": "1111100000",
+        "name": "John Grant",
+        "programme_code": "BAMKT",
+        "campus_code": "PAR",
+        "year_of_study": "2",
+        "password": "Belly1234"
+    },
+    {
+        "student_id": "1111110000",
+        "name": "Lyndsay Grant",
         "programme_code": "BANAV",
         "campus_code": "PCK",
+        "year_of_study": "1",
+        "password": "Belly1234"
+    },
+    {
+        "student_id": "1111111000",
+        "name": "Laura Grant",
+        "programme_code": "BACAT",
+        "campus_code": "PCK",
+        "year_of_study": "3",
+        "password": "Belly1234"
+    },
+    {
+        "student_id": "1111111100",
+        "name": "Jamie Lumsden",
+        "programme_code": "BAMKT",
+        "campus_code": "PCK",
         "year_of_study": "2",
+        "password": "Belly1234"
+    },
+    {
+        "student_id": "1111111110",
+        "name": "Craig Donald",
+        "programme_code": "BAENT",
+        "campus_code": "PCK",
+        "year_of_study": "2",
+        "password": "Belly1234"
+    },
+    {
+        "student_id": "1111111111",
+        "name": "Lewis McCreadie",
+        "programme_code": "BANAV",
+        "campus_code": "PCK",
+        "year_of_study": "1",
         "password": "Belly1234"
     }
 ]
