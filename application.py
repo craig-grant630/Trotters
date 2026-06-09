@@ -160,8 +160,52 @@ class StudyBuddyApp:
 
 # Find Match results
 #===================================================
-    def find_matches(self, request_id):
-        pass
+    def find_matches(self, request):
+        source  = request
+        if not source:
+            return []
 
+        results = []
+        for option in self.requests.values():
+            if option.request_id == source.request_id:
+                continue
+            if option.student_id == source.student_id:
+                continue
+            score = self.score_match(source, option)
+            if score == 0:
+                continue
 
+            overlaps = source.overlapping_availability(option)
+            results.append({
+                "request": option,
+                "student": self.students.get(option.student_id),
+                "score": score,
+                "overlaps": overlaps
+            })
+
+        results.sort(key=lambda x: (x["score"], len(x["overlaps"])), reverse=True)
+
+        return results
+
+    @staticmethod
+    def score_match(source, option):
+        if not source.campus_code or not option.campus_code:
+            return 0
+        if not source.programme_code or not option.programme_code:
+            return 0
+
+        if source.module_code.upper() != option.module_code.upper():
+            return 0
+
+        score = 3
+
+        if source.campus_code.upper() == option.campus_code.upper():
+            score +=2
+        if source.year == option.year:
+            score +=1
+
+        overlaps = source.overlapping_availability(option)
+        score += len(overlaps)
+
+        return score
 
