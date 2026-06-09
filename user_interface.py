@@ -597,8 +597,6 @@ class RequestResults(tk.Frame):
         self.pack(fill="both", expand=True, pady=(40, 40), padx=20)
         self.ui = ui
         self.request = request
-
-        student = self.ui.user
         # ===============================================================================================================
         # HEADER
         InternalHeader(self, ui, f"Dashboard")
@@ -612,6 +610,36 @@ class RequestResults(tk.Frame):
         row2.pack(fill="both", expand=True)
 
         # find matches using application function
+        matches = self.ui.app.find_matches(self.request)
+        if not matches:
+            no_match = tk.Frame(row2, bg=BG_COLOUR3)
+            no_match.pack(fill="x", pady=20, padx=20)
+
+            styled_label(
+                no_match,"No matches found for this request",font=FONT_BUTTON,fg=FG_COLOUR2,bg=BG_COLOUR3).pack(pady=20, padx=20)
+            return
+
+        # Only set up canvas and scroll if matches actually exist
+        canvas = tk.Canvas(row2, bg=BG_COLOUR, highlightthickness=0)
+        canvas.pack(fill="both", expand=True, side="left")
+
+        scrollbar = tk.Scrollbar(row2, orient="vertical", command=canvas.yview, bg=BG_COLOUR3,troughcolor=BG_COLOUR2)
+        scrollbar.pack(side="right", fill="y")
+
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        inner = tk.Frame(canvas, bg=BG_COLOUR)
+        canvas_window=canvas.create_window((0,0), window=inner, anchor="nw")
+
+        styled_label(inner, f"Found {len(matches)} matches", font=FONT_BUTTON, fg="green", bg=BG_COLOUR).pack(
+            anchor="w", pady=(5, 8))
+
+        def canvas_configuration(event):
+            canvas.configure(scrollregion=canvas.bbox("all"))
+            canvas.itemconfig(canvas_window, width=canvas.winfo_width())
+
+        inner.bind("<Configure>", canvas_configuration)
+        canvas.bind("<Configure>", lambda e: canvas.itemconfig(canvas_window, width=canvas.winfo_width()))
 
 if __name__=="__main__":
     StudyBuddyUI()
