@@ -610,6 +610,8 @@ class RequestResults(tk.Frame):
         row1 = tk.Frame(self, bg=BG_COLOUR3)
         row1.pack(fill="x")
         styled_label(row1, f"Source Request: #{request.request_id} | {request.module_code} | {request.campus_code}", bg=BG_COLOUR3, fg=FG_COLOUR2, font=FONT_SMALL).pack(pady=10, padx=10, side="left")
+        tk.Button(row1, text="Back to Dashboard", bg=BG_COLOUR3, fg=FG_COLOUR2, relief="flat", command=self.ui.show_dashboard,
+                  font=("Helvetica", 10, "bold")).pack(pady=2, side="right", padx=5)
         # =========================================================================================
 
         row2 = tk.Frame(self, bg=BG_COLOUR2)
@@ -639,7 +641,7 @@ class RequestResults(tk.Frame):
         canvas_window=canvas.create_window((0,0), window=inner, anchor="nw")
 
         styled_label(inner, f"Found {len(matches)} matches", font=FONT_BUTTON, fg="green", bg=BG_COLOUR).pack(
-            anchor="w", pady=(5, 8))
+            anchor="w", pady=(4, 8))
 
         def canvas_configuration(e):
             canvas.configure(scrollregion=canvas.bbox("all"))
