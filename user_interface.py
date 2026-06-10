@@ -13,6 +13,8 @@ from classes import VALID_DAYS, VALID_PERIODS
 # https://www.geeksforgeeks.org/python/python-pack-method-in-tkinter/
 # https://wiki.tcl-lang.org/page/tkinter.Listbox
 # https://www.pythontutorial.net/tkinter/tkinter-treeview/
+# https://stackoverflow.com/questions/7727804/tkinter-using-scrollbars-on-a-canvas
+
 # Colours, fonts for UI
 #====================================================================================================
 BG_COLOUR = "#1a1a2e"
@@ -33,19 +35,23 @@ FONT_SMALL = ("Helvetica", 10)
 FONT_BUTTON= ("Helvetica", 12, "bold")
 FONT_MSG = ("helvetica", 9)
 #=================================================================================================================
-#Stlyed Widgets
+#Stlyed Reusable Widgets
 
+# Card is a frame with the border
 def card(parent, padx=10, pady=14, bg=BG_COLOUR2):
     frame = tk.Frame(parent, bg=bg, padx=padx, pady=pady,
                      highlightthickness=1, highlightbackground=BORDER)
     return frame
 
+# Styled Label for quick use for displaying text
 def styled_label(parent, text, font=FONT_BODY, fg=FG_COLOUR, bg=BG_COLOUR2, **kwargs):
     return tk.Label(parent, text=text, font=font,
                     fg=fg, bg=bg, **kwargs)
 
+# Dropdown menu that is styled that can be reused
 def styled_combobox(parent, options, width, **kwargs):
 
+    # Fundamental to overwrite the base styling
     parent.option_add("*TCombobox*Listbox.background", BG_COLOUR3)
     parent.option_add('*TCombobox*Listbox.foreground', 'white')
     parent.option_add('*TCombobox*Listbox.selectBackground', ACCENT)
@@ -620,6 +626,7 @@ class RequestResults(tk.Frame):
             return
 
         # Only set up canvas and scroll if matches actually exist
+        # Using Canavs and scroll to create a scrollable frame for all matches
         canvas = tk.Canvas(row2, bg=BG_COLOUR, highlightthickness=0)
         canvas.pack(fill="both", expand=True, side="left")
 
@@ -634,12 +641,61 @@ class RequestResults(tk.Frame):
         styled_label(inner, f"Found {len(matches)} matches", font=FONT_BUTTON, fg="green", bg=BG_COLOUR).pack(
             anchor="w", pady=(5, 8))
 
-        def canvas_configuration(event):
+        def canvas_configuration(e):
             canvas.configure(scrollregion=canvas.bbox("all"))
             canvas.itemconfig(canvas_window, width=canvas.winfo_width())
 
         inner.bind("<Configure>", canvas_configuration)
         canvas.bind("<Configure>", lambda e: canvas.itemconfig(canvas_window, width=canvas.winfo_width()))
+
+        for rank, match in enumerate(matches, 1):
+            self.build_match_card(inner, rank, match)
+
+    def build_match_card(self, parent, rank, match):
+        r = match["request"]
+        score = match["score"]
+        overlaps = match["overlaps"]
+
+        score_colour = "green" if score >= 6 else ("orange" if score >= 4 else FG_COLOUR)
+
+        c = card(parent, bg=BG_COLOUR2)
+        c.pack(fill="x", pady=5)
+        c.grid_columnconfigure(0, weight=0)
+        c.grid_columnconfigure(1, weight=1)
+        c.grid_columnconfigure(2, weight=0)
+
+        tk.Label(c, text=f"#{rank}", font=FONT_BUTTON, fg="white", bg=ACCENT, width=4).grid(row=0, column=0,
+                                                                                            sticky="nw")
+        details = tk.Frame(c, bg=BG_COLOUR2)
+        details.grid(row=0, column=1, pady=(8, 8))
+
+        info = [("Campus", self.ui.app.campus_name(r.campus_code)), ("Programme", r.programme_code),
+                ("Year", f"Year {r.year}"),
+                ("Module", r.module_code), ("Request ID", f"#{r.request_id}")]
+
+        for i, (label, value) in enumerate(info):
+            col = (i % 2) * 2
+            row = i // 2
+
+            styled_label(details, f"{label}:", fg=FG_COLOUR2, bg=BG_COLOUR2, anchor="e", width=11).grid(
+                row=row, column=col, sticky="e", pady=2, padx=(0, 4))
+            styled_label(details, value, fg=FG_COLOUR, bg=BG_COLOUR2, anchor="w").grid(row=row, column=col + 1, sticky="w", pady=2)
+
+        tk.Label(c, text=f"Score: {score}", font=FONT_BUTTON, fg=score_colour, bg=BG_COLOUR2).grid(
+            row=0, column=2, sticky="ne", padx=(0, 12), pady=4)
+
+        available_frame = tk.Frame(c, bg=BG_COLOUR2)
+        available_frame.grid(row=2, columnspan=3, sticky="w")
+
+        styled_label(available_frame,"Availability Slots: ", fg=FG_COLOUR2, bg=BG_COLOUR2, anchor="w", font=FONT_BUTTON).pack(side="left", anchor="nw", pady=2)
+
+        slots_grid = tk.Frame(available_frame, bg=BG_COLOUR2)
+        slots_grid.pack(side="left", fill="both", expand=True, padx=(4, 0))
+
+        for i, slot in enumerate(r.availability,0):
+            colour = "green" if slot in overlaps else ENTRY_BG
+            tk.Label(slots_grid, text=f" {slot['day']} {slot['period']} ", fg="white" if slot in overlaps else FG_COLOUR2, bg=colour, font=FONT_SMALL).grid(row= i // 4, column=(i % 4) +1, padx=4)
+
 
 if __name__=="__main__":
     StudyBuddyUI()
