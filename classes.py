@@ -139,3 +139,15 @@ class Requests:
     @classmethod
     def from_dict(cls, data):
         return cls(data["request_id"], data["student_id"], data["campus_code"], data["programme_code"], data["year"], data["module_code"], data.get("availability",[]))
+
+class Admin:
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+    def to_dict(self):
+        return self.__dict__
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(data['username'], data['password'])

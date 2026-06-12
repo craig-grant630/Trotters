@@ -1,7 +1,7 @@
 # https://medium.com/@idelossantosruiz/mastering-json-in-python-oop-a-practical-guide-65b39e868c33
 import os
 import json
-from classes import Campus, Module, Programme, Student, Requests
+from classes import Campus, Module, Programme, Student, Requests, Admin
 
 class FileHandler:
 
@@ -9,6 +9,7 @@ class FileHandler:
     STUDENTS_FILE = 'student.json'
     PROGRAMMES_FILE = 'programmes.json'
     REQUESTS_FILE = 'requests.json'
+    ADMIN_FILE = 'admin.json'
 #=======================================================================================================================
     # Initialise paths and set read and write methods
     def __init__(self, data_dir="data"):
@@ -115,6 +116,23 @@ class FileHandler:
         else:
             return max(r.request_id for r in requests.values()) + 1
 #=======================================================================================================================
+    def admin_save(self, admin):
+        result = []
+        for a in admin.values():
+            # Use method from admin class to change into a dictionary
+            admin_dict = a.to_dict()
+            result.append(admin_dict)
+        return self.write_file(FileHandler.ADMIN_FILE, result)
+    #
+    def load_admin(self):
+        result = {}
+        # Change reading JSON file to a dictionary of objects
+        for a_dict in self.read_file(FileHandler.ADMIN_FILE):
+            a_object = Admin.from_dict(a_dict)
+            a_key = a_object.username
+            result[a_key] = a_object
+        return result
+#=======================================================================================================================
     # Check if required data and starting data is required methods
     def required_campus_data_needed(self):
         result = False
@@ -125,6 +143,13 @@ class FileHandler:
     def required_programme_data_needed(self):
         result = False
         if not os.path.exists(self.path(FileHandler.PROGRAMMES_FILE)) or len(self.read_file(FileHandler.PROGRAMMES_FILE)) <= 0:
+            result = True
+        return result
+
+    def required_admin_data_needed(self):
+        result = False
+        if not os.path.exists(self.path(FileHandler.ADMIN_FILE)) or len(
+                self.read_file(FileHandler.ADMIN_FILE)) <= 0:
             result = True
         return result
 #========================================================================================================================
@@ -193,6 +218,10 @@ class FileHandler:
         }
 
         self.programme_save(programmes)
+
+    def set_required_admin_data(self):
+        admin = {"Admin":Admin("Admin", "1234")}
+        self.admin_save(admin)
 
     def set_sample_requests(self):
 
