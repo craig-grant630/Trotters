@@ -109,16 +109,16 @@ class StudyBuddyUI:
         self.container = tk.Frame(self.root, bg=BG_COLOUR)
         self.container.pack(fill="both", expand=True)
 
-        self.show_login()
+        self.show_login(mode="student")
         self.root.mainloop()
 
     def clear(self):
         for w in self.container.winfo_children():
             w.destroy()
 
-    def show_login(self):
+    def show_login(self, mode):
         self.clear()
-        LoginFrame(self.container, self)
+        LoginFrame(self.container, self, mode)
 
     def show_register(self):
         self.clear()
@@ -135,6 +135,10 @@ class StudyBuddyUI:
     def show_request_matches(self, request):
         self.clear()
         RequestResults(self.container, self, request)
+
+    def show_admin_dashboard(self):
+        self.clear()
+        AdminDashboard(self.container, self)
 
 # =====================================================================================
 # Header frames used withing main frames of application
@@ -160,19 +164,20 @@ class InternalHeader(tk.Frame):
         styled_label(self, text=f" Study Buddy   |   {title}", bg= BG_COLOUR3,font=FONT_BUTTON, fg=FG_COLOUR).pack(side="left", padx=10, pady=(10,2))
 
         tk.Button(self, text="Logout", bg=BG_COLOUR2, fg="white", font=("Helvetica", 11, "bold"), relief="flat",
-                  borderwidth=1, width=8, command=ui.show_login).pack(side="right", padx=10)
+                  borderwidth=1, width=8, command=lambda: ui.show_login(mode="student")).pack(side="right", padx=10)
         row = tk.Frame(parent, bg=BG_COLOUR3)
         row.pack(fill="x")
         separator(row, ACCENT).pack(fill="x", pady=2, padx=100)
 #==============================================================================================
 # Main frames of application
 class LoginFrame(tk.Frame):
-    def __init__(self, parent, ui):
+    def __init__(self, parent, ui, mode="student"):
         # create instance of the login frame:
         super().__init__(parent, bg=BG_COLOUR)
         self.pack(fill="both", expand=True)
         self.ui = ui
         self.login_msg = tk.StringVar()
+        self.mode = mode
 
         outer = tk.Frame(self, bg=BG_COLOUR2,padx=40, pady=36)
         outer.place(relx=0.5, rely=0.5, anchor="center")
@@ -182,7 +187,7 @@ class LoginFrame(tk.Frame):
         row = tk.Frame(outer, bg=BG_COLOUR2)
         row.pack(pady=10)
         login_frame_btn = tk.Button(row, text="Login", bg=ACCENT, fg="white", font=FONT_BUTTON, relief="flat",
-                                    borderwidth=1, width=20, command=ui.show_login)
+                                    borderwidth=1, width=20, command=lambda: ui.show_login(mode="student"))
         login_frame_btn.grid(row=0, column=0)
 
         register_frame_btn = tk.Button(row, text="Register", bg=BG_COLOUR, fg="white", font=FONT_BUTTON, relief="flat",
@@ -193,9 +198,12 @@ class LoginFrame(tk.Frame):
         row2.pack(pady=5)
 
         tk.Label(row2, bg=BG_COLOUR2, fg="red",font=FONT_MSG, textvariable=self.login_msg).grid()
-
-        styled_label(row2, "Student ID (10 digits)", bg=BG_COLOUR2, font=FONT_BODY,
-                     fg=FG_COLOUR2).grid(row=1, column=0, sticky="w", padx=8, pady=8)
+        if self.mode == "student":
+            styled_label(row2, "Student ID (10 digits)", bg=BG_COLOUR2, font=FONT_BODY,
+                         fg=FG_COLOUR2).grid(row=1, column=0, sticky="w", padx=8, pady=8)
+        else:
+            styled_label(row2, "Admin Username", bg=BG_COLOUR2, font=FONT_BODY,
+                             fg=FG_COLOUR2).grid(row=1, column=0, sticky="w", padx=8, pady=8)
 
         self.login_id = tk.Entry(row2, bg=BG_COLOUR3,fg="white", relief="flat", font=FONT_BODY, width=40, highlightcolor=ACCENT, highlightthickness=1, insertbackground='white')
         self.login_id.grid(row=2, column=0, sticky="w", padx=8)
@@ -208,19 +216,34 @@ class LoginFrame(tk.Frame):
 
         tk.Button(outer, text="Login >>", bg=BG_COLOUR2, fg="white", font=FONT_BUTTON, relief="flat",
                   borderwidth=1, command=self.login).pack(pady=15)
+        separator(outer, ACCENT).pack(fill="x", pady=2, padx=100)
+        if self.mode == "student":
+            tk.Button(outer, text="For admin login click here", bg=BG_COLOUR2, font=FONT_SMALL, fg=FG_COLOUR2,relief="flat", command=lambda: ui.show_login(mode="admin")).pack(pady=5)
+        else:
+            tk.Button(outer, text="For student login click here", bg=BG_COLOUR2, font=FONT_SMALL, fg=FG_COLOUR2,
+                      relief="flat", command=lambda: ui.show_login(mode="student")).pack(pady=5)
 
     def login(self):
         sid = self.login_id.get()
         password = self.login_pwd.get()
+        if self.mode == "student":
+            valid, result = self.ui.app.authenticate(sid, password)
 
-        valid, result = self.ui.app.authenticate(sid, password)
-
-        if valid:
-            self.ui.user = result
-            # show_dash
-            self.ui.show_dashboard()
+            if valid:
+                self.ui.user = result
+                # show_dash
+                self.ui.show_dashboard()
+            else:
+                self.login_msg.set(result)
         else:
-            self.login_msg.set(result)
+            valid, result = self.ui.app.authenticate_admin(sid, password)
+
+            if valid:
+                self.ui.user = result
+                # show_dash
+                self.ui.show_admin_dashboard()
+            else:
+                self.login_msg.set(result)
 
 class RegisterFrame(tk.Frame):
     def __init__(self, parent, ui):
@@ -237,7 +260,7 @@ class RegisterFrame(tk.Frame):
         row = tk.Frame(outer, bg=BG_COLOUR2)
         row.pack(pady=10)
         login_frame_btn = tk.Button(row, text="Login", bg=BG_COLOUR, fg="white", font=FONT_BUTTON, relief="flat",
-                                    borderwidth=1, width=20, command=ui.show_login)
+                                    borderwidth=1, width=20, command=lambda: ui.show_login(mode="student"))
         login_frame_btn.grid(row=0, column=0)
         register_frame_btn = tk.Button(row, text="Register", bg=ACCENT, fg="white", font=FONT_BUTTON, relief="flat",
                                        borderwidth=1, width=20, command=ui.show_register)
@@ -698,6 +721,20 @@ class RequestResults(tk.Frame):
             colour = "green" if slot in overlaps else ENTRY_BG
             tk.Label(slots_grid, text=f" {slot['day']} {slot['period']} ", fg="white" if slot in overlaps else FG_COLOUR2, bg=colour, font=FONT_SMALL).grid(row= i // 4, column=(i % 4) +1, padx=4)
 
+class AdminDashboard(tk.Frame):
+    def __init__(self, parent, ui):
+        super().__init__(parent, bg=BG_COLOUR)
+        self.pack(fill="both", expand=True, pady=(40,40), padx=20)
+        self.ui = ui
 
+        admin = self.ui.user
+        # HEADER
+        InternalHeader(self, ui, f"Admin Dashboard")
+
+        row1 = tk.Frame(self, bg=BG_COLOUR3)
+        row1.pack(fill="x")
+
+        styled_label(row1, f"Welcome {admin.username},", bg=BG_COLOUR3, font=FONT_BODY).pack(side="left", pady=10,
+                                                                                           padx=10)
 if __name__=="__main__":
     StudyBuddyUI()

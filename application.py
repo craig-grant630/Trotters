@@ -11,11 +11,14 @@ class StudyBuddyApp:
         if self.store.required_programme_data_needed():
             # give required data (programmes)
             self.store.set_required_programme_data()
+        if self.store.required_admin_data_needed():
+            self.store.set_required_admin_data()
 
         self.programmes = self.store.load_programmes()
         self.campuses = self.store.load_campuses()
         self.students = self.store.load_students()
         self.requests = self.store.load_requests()
+        self.admin = self.store.load_admin()
 
 # Register validations and login authentication
     #=========================================================================================================
@@ -63,6 +66,17 @@ class StudyBuddyApp:
         else:
             return True, student
 
+    def authenticate_admin(self, username, password):
+        admin = self.admin.get(username)
+
+        if not admin:
+            return False, "WARNING:  Administrator does not exist within the system."
+        if not password:
+            return False, "WARNING:  Password is empty. Please enter."
+        if admin.password != password:
+            return False, "WARNING:  Password does not match."
+        else:
+            return True, admin
 # Request lookups by student ID and request ID
 # Request CRUD methods
 #=======================================================================================================================
