@@ -571,8 +571,8 @@ class AddEditRequest(tk.Frame):
     def submit(self):
         self.msg.set("")
         student = self.ui.user
-        campus = self.campus_cb.get().strip().split("-")[0]
-        module = self.module_cb.get().strip().split("-")[0]
+        campus = self.campus_cb.get().split("-")[0].strip()
+        module = self.module_cb.get().split("-")[0].strip()
         if not campus or not module:
             self.msg.set("Please select a campus and module")
             return
