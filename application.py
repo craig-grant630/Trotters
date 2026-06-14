@@ -178,6 +178,46 @@ class StudyBuddyApp:
                 return campus
         return None
 
+    def delete_campus(self, code):
+        campus = self.get_campus(code)
+        if not campus:
+            return False, "ERROR: Programme not found", 0, 0
+
+        student_count = 0
+        request_count = 0
+
+        if code in self.campuses:
+            # Count them first while the dictionaries are intact
+            for student in self.students.values():
+                if student.campus_code == code:
+                    student_count += 1
+                    for request in self.requests.values():
+                        if request.student_id == student.student_id:
+                            request_count += 1
+
+            for programme in list(self.programmes.values()):
+                refresh_codes = []
+                for campus_code in programme.campus_codes:
+                    if code != campus_code:
+                        refresh_codes.append(campus_code)
+                programme.campus_codes = refresh_codes
+
+
+            for students in list(self.students.values()):
+                if students.campus_code == code:
+                    for requests in list(self.requests.values()):
+                        if requests.student_id == students.student_id:
+                            del self.requests[requests.request_id]
+                    del self.students[students.student_id]
+            del self.campuses[code]
+
+        self.store.requests_save(self.requests)
+        self.store.save_students(self.students)
+        self.store.save_campuses(self.campuses)
+        self.store.programme_save(self.programmes)
+
+        # Return the counts back to the UI
+        return True, student_count, request_count
 # Find Match results
 #===================================================
     def find_matches(self, request):

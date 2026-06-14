@@ -794,15 +794,15 @@ class AdminDashboard(tk.Frame):
 
         styled_label(rightb_side_frame, "Campus Actions", font=FONT_BUTTON, fg=ACCENT).pack(anchor="w")
         separator(rightb_side_frame, bg=ACCENT).pack(fill="x", pady=8, padx=5)
-        add_button = tk.Button(rightb_side_frame, bg=BG_COLOUR3, fg=FG_COLOUR, relief="flat", text="Add Campus",
+        camp_add_button = tk.Button(rightb_side_frame, bg=BG_COLOUR3, fg=FG_COLOUR, relief="flat", text="Add Campus",
                                font=("Helvetica", 10, "bold"), width=15)
-        add_button.pack(pady=3)
-        edit_button = tk.Button(rightb_side_frame, bg=BG_COLOUR3, fg=FG_COLOUR, relief="flat", text="Edit Campus",
+        camp_add_button.pack(pady=3)
+        camp_edit_button = tk.Button(rightb_side_frame, bg=BG_COLOUR3, fg=FG_COLOUR, relief="flat", text="Edit Campus",
                                 font=("Helvetica", 10, "bold"), width=15)
-        edit_button.pack(pady=3)
-        delete_button = tk.Button(rightb_side_frame, bg="red", fg=FG_COLOUR, relief="flat", text="Delete Campus",
-                                  font=("Helvetica", 10, "bold"), width=15)
-        delete_button.pack(pady=3, side="bottom")
+        camp_edit_button.pack(pady=3)
+        camp_delete_button = tk.Button(rightb_side_frame, bg="red", fg=FG_COLOUR, relief="flat", text="Delete Campus",
+                                  font=("Helvetica", 10, "bold"), width=15, command=self.delete_campus)
+        camp_delete_button.pack(pady=3, side="bottom")
 #====================================================================================================================
     def refresh_programmes_treeview(self):
         for item in self.prog_treeview.get_children():
@@ -855,7 +855,24 @@ class AdminDashboard(tk.Frame):
         pass
 
     def delete_campus(self):
-        pass
+        campus = self.selection_campus_treeview()
+
+        if not campus:
+            messagebox.showwarning("Warning", "No Campus selected")
+            return
+
+        if not messagebox.askyesno("Delete Campus",
+                                   f"Are you sure you want to delete Campus: [{campus.campus_code}, {campus.name}]?\nThis will permanently remove all associated students and requests."):
+            return
+
+        success, num_students, num_requests = self.ui.app.delete_campus(campus.campus_code)
+
+        if success:
+            self.refresh_campus_treeview()
+            messagebox.showinfo("Success",
+                                f"Campus deleted successfully!\nRemoved {num_students} students and {num_requests} requests.")
+        else:
+            messagebox.showwarning("Warning", "Could not delete Campus")
 
     def add_programme(self):
         pass
