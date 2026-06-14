@@ -172,6 +172,12 @@ class StudyBuddyApp:
                 return campus.name
         return None
 
+    def get_campus(self, campus_code):
+        for campus in self.campuses.values():
+            if campus.campus_code == campus_code:
+                return campus
+        return None
+
 # Find Match results
 #===================================================
     def find_matches(self, request):
@@ -223,3 +229,45 @@ class StudyBuddyApp:
 
         return score
 
+#=====================================================
+
+    def get_programme(self, code):
+        if not code:
+            return None
+        for program in self.programmes.values():
+            if program.programme_code == code:
+                return program
+        return None
+
+    def delete_programme(self, code):
+        programme = self.get_programme(code)
+        if not programme:
+            return False, "ERROR: Programme not found", 0, 0
+
+        student_count = 0
+        request_count = 0
+
+        if code in self.programmes:
+            # Count them first while the dictionaries are intact
+            for student in self.students.values():
+                if student.programme_code == code:
+                    student_count += 1
+                    for request in self.requests.values():
+                        if request.student_id == student.student_id:
+                            request_count += 1
+
+            # Now perform the safe deletions using list() snapshots
+            for students in list(self.students.values()):
+                if students.programme_code == code:
+                    for requests in list(self.requests.values()):
+                        if requests.student_id == students.student_id:
+                            del self.requests[requests.request_id]
+                    del self.students[students.student_id]
+            del self.programmes[code]
+
+        self.store.requests_save(self.requests)
+        self.store.save_students(self.students)
+        self.store.programme_save(self.programmes)
+
+        # Return the counts back to the UI
+        return True, student_count, request_count

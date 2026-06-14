@@ -160,7 +160,7 @@ class InternalHeader(tk.Frame):
         self.pack(fill="both")
         self.ui = ui
 
-        tk.Button(self, text="TiT", bg=BG_COLOUR3, fg=ACCENT, font=FONT_HEADER, command=self.ui.show_dashboard, relief="flat", activebackground=BG_COLOUR3, cursor="fleur").pack(side="left", padx=10)
+        tk.Button(self, text="TiT", bg=BG_COLOUR3, fg=ACCENT, font=FONT_HEADER, relief="flat", activebackground=BG_COLOUR3, cursor="fleur").pack(side="left", padx=10)
         styled_label(self, text=f" Study Buddy   |   {title}", bg= BG_COLOUR3,font=FONT_BUTTON, fg=FG_COLOUR).pack(side="left", padx=10, pady=(10,2))
 
         tk.Button(self, text="Logout", bg=BG_COLOUR2, fg="white", font=("Helvetica", 11, "bold"), relief="flat",
@@ -218,9 +218,9 @@ class LoginFrame(tk.Frame):
                   borderwidth=1, command=self.login).pack(pady=15)
         separator(outer, ACCENT).pack(fill="x", pady=2, padx=100)
         if self.mode == "student":
-            tk.Button(outer, text="For admin login click here", bg=BG_COLOUR2, font=FONT_SMALL, fg=FG_COLOUR2,relief="flat", command=lambda: ui.show_login(mode="admin")).pack(pady=5)
+            tk.Button(outer, text="Not a Student? Admin Login Click Here", bg=BG_COLOUR2, font=FONT_SMALL, fg=FG_COLOUR2,relief="flat", command=lambda: ui.show_login(mode="admin")).pack(pady=5)
         else:
-            tk.Button(outer, text="For student login click here", bg=BG_COLOUR2, font=FONT_SMALL, fg=FG_COLOUR2,
+            tk.Button(outer, text="Back to student login click here", bg=BG_COLOUR2, font=FONT_SMALL, fg=FG_COLOUR2,
                       relief="flat", command=lambda: ui.show_login(mode="student")).pack(pady=5)
 
     def login(self):
@@ -736,5 +736,153 @@ class AdminDashboard(tk.Frame):
 
         styled_label(row1, f"Welcome {admin.username},", bg=BG_COLOUR3, font=FONT_BODY).pack(side="left", pady=10,
                                                                                            padx=10)
+        programmes_btn = tk.Button(row1, text="Programmes & Campuses", bg=ACCENT, fg="white", font=FONT_BUTTON, relief="flat",
+                                   borderwidth=1, command=self.ui.show_admin_dashboard)
+        programmes_btn.pack(side="left", padx=10, pady=5)
+
+        campus_btn = tk.Button(row1, text="Students", bg=BG_COLOUR, fg="white", font=FONT_BUTTON, relief="flat",
+                               borderwidth=1)
+        campus_btn.pack(side="left", padx=10, pady=5)
+
+        row2 = tk.Frame(self, bg=BG_COLOUR)
+        row2.pack(fill="both", expand=True)
+
+        row2.grid_columnconfigure(0, weight=1)
+        row2.grid_columnconfigure(1, weight=0)
+        row2.rowconfigure(0, weight=1)
+        row2.rowconfigure(1, weight=1)
+    #===============================================================================================================
+        left_side_frame = card(row2, bg=BG_COLOUR2)
+        left_side_frame.grid(row=0, column=0, sticky="new")
+
+        styled_label(left_side_frame, "All Programmes", font=FONT_BUTTON, fg=ACCENT).pack(anchor="w")
+        separator(left_side_frame, bg=ACCENT).pack(fill="x", pady=8, padx=10)
+
+        self.prog_treeview = styled_treeview(left_side_frame, ["Code", "Programme Name"],
+                                        ["Code", "Programme Name"], [120, 40])
+        self.prog_treeview.pack(fill="both", expand=True)
+        self.refresh_programmes_treeview()
+#=================================================================================================
+        right_side_frame = card(row2, bg=BG_COLOUR2)
+        right_side_frame.grid(row=0, column=1, sticky="nsew")
+
+        styled_label(right_side_frame, "Programme Actions", font=FONT_BUTTON, fg=ACCENT).pack(anchor="w")
+        separator(right_side_frame, bg=ACCENT).pack(fill="x", pady=8, padx=5)
+        add_button = tk.Button(right_side_frame, bg=BG_COLOUR3, fg=FG_COLOUR, relief="flat", text="Add Programme",
+                               font=("Helvetica", 10, "bold"), width=15)
+        add_button.pack(pady=3)
+        edit_button = tk.Button(right_side_frame, bg=BG_COLOUR3, fg=FG_COLOUR, relief="flat", text="Edit Programme",
+                                font=("Helvetica", 10, "bold"), width=15)
+        edit_button.pack(pady=3)
+        delete_button = tk.Button(right_side_frame, bg="red", fg=FG_COLOUR, relief="flat", text="Delete Programme",
+                                  font=("Helvetica", 10, "bold"), width=15, command=self.delete_programme)
+        delete_button.pack(pady=3, side="bottom")
+    #=========================================================================================================
+        leftb_side_frame = card(row2, bg=BG_COLOUR2)
+        leftb_side_frame.grid(row=1, column=0, sticky="new")
+
+        styled_label(leftb_side_frame, "All Campuses", font=FONT_BUTTON, fg=ACCENT).pack(anchor="w")
+        separator(leftb_side_frame, bg=ACCENT).pack(fill="x", pady=8, padx=10)
+
+        self.camp_treeview = styled_treeview(leftb_side_frame, ["Code", "Campus Code"],
+                                        ["Code", "Campus Name"], [120, 40])
+        self.camp_treeview.pack(fill="both", expand=True)
+        self.refresh_campus_treeview()
+#===================================================================================================================
+        rightb_side_frame = card(row2, bg=BG_COLOUR2)
+        rightb_side_frame.grid(row=1, column=1, sticky="nsew")
+
+        styled_label(rightb_side_frame, "Campus Actions", font=FONT_BUTTON, fg=ACCENT).pack(anchor="w")
+        separator(rightb_side_frame, bg=ACCENT).pack(fill="x", pady=8, padx=5)
+        add_button = tk.Button(rightb_side_frame, bg=BG_COLOUR3, fg=FG_COLOUR, relief="flat", text="Add Campus",
+                               font=("Helvetica", 10, "bold"), width=15)
+        add_button.pack(pady=3)
+        edit_button = tk.Button(rightb_side_frame, bg=BG_COLOUR3, fg=FG_COLOUR, relief="flat", text="Edit Campus",
+                                font=("Helvetica", 10, "bold"), width=15)
+        edit_button.pack(pady=3)
+        delete_button = tk.Button(rightb_side_frame, bg="red", fg=FG_COLOUR, relief="flat", text="Delete Campus",
+                                  font=("Helvetica", 10, "bold"), width=15)
+        delete_button.pack(pady=3, side="bottom")
+#====================================================================================================================
+    def refresh_programmes_treeview(self):
+        for item in self.prog_treeview.get_children():
+            self.prog_treeview.delete(item)
+
+        all_programmes = list(self.ui.app.programmes.values())
+
+        if not all_programmes:
+            self.prog_treeview.insert("", "end", iid="none", values=("No Programmes Here", ""))
+            return
+
+        for item in all_programmes:
+
+            self.prog_treeview.insert("", "end", iid=str(item.programme_code),
+                                 values=(f"{item.programme_code}", str(item.name)))
+
+    def refresh_campus_treeview(self):
+        for item in self.camp_treeview.get_children():
+            self.camp_treeview.delete(item)
+
+        all_campus = list(self.ui.app.campuses.values())
+
+        if not all_campus:
+            self.prog_treeview.insert("", "end", iid="none", values=("No Campuses Here", ""))
+            return
+
+        for item in all_campus:
+
+            self.camp_treeview.insert("", "end", iid=str(item.campus_code),
+                                 values=(f"{item.campus_code}", str(item.name)))
+
+    def selection_prog_treeview(self):
+        selection = self.prog_treeview.selection()
+        if not selection or selection[0] == "none":
+            return None
+        programme_code = selection[0]
+        return self.ui.app.get_programme(programme_code)
+
+    def selection_campus_treeview(self):
+        selection = self.camp_treeview.selection()
+        if not selection or selection[0] == "none":
+            return None
+        campus_code = selection[0]
+        return self.ui.app.get_campus(campus_code)
+
+    def add_campus(self):
+        pass
+
+    def edit_campus(self):
+        pass
+
+    def delete_campus(self):
+        pass
+
+    def add_programme(self):
+        pass
+
+    def edit_programme(self):
+        pass
+
+    def delete_programme(self):
+        programme = self.selection_prog_treeview()
+
+        if not programme:
+            messagebox.showwarning("Warning", "No programme selected")
+            return
+
+        if not messagebox.askyesno("Delete Programme",
+                                   f"Are you sure you want to delete programme: [{programme.programme_code}, {programme.name}]?\nThis will permanently remove all associated students and requests."):
+            return
+
+        success, num_students, num_requests = self.ui.app.delete_programme(programme.programme_code)
+
+        if success:
+            self.refresh_programmes_treeview()
+            messagebox.showinfo("Success",
+                                f"Programme deleted successfully!\nRemoved {num_students} students and {num_requests} requests.")
+        else:
+            messagebox.showwarning("Warning", "Could not delete programme")
+
+
 if __name__=="__main__":
     StudyBuddyUI()
