@@ -140,6 +140,10 @@ class StudyBuddyUI:
         self.clear()
         AdminDashboard(self.container, self)
 
+    def show_programme_form(self, programme=None):
+        self.clear()
+        AddEditProgramme(self.container, self, programme)
+
 # =====================================================================================
 # Header frames used withing main frames of application
 class WelcomeHeader(tk.Frame):
@@ -758,8 +762,8 @@ class AdminDashboard(tk.Frame):
         styled_label(left_side_frame, "All Programmes", font=FONT_BUTTON, fg=ACCENT).pack(anchor="w")
         separator(left_side_frame, bg=ACCENT).pack(fill="x", pady=8, padx=10)
 
-        self.prog_treeview = styled_treeview(left_side_frame, ["Code", "Programme Name"],
-                                        ["Code", "Programme Name"], [120, 40])
+        self.prog_treeview = styled_treeview(left_side_frame, ["Code", "Programme Name", "Campus Codes", "# Modules"],
+                                        ["Code", "Programme Name", "Campus Codes", "# Modules"], [40, 120, 40, 40])
         self.prog_treeview.pack(fill="both", expand=True)
         self.refresh_programmes_treeview()
 #=================================================================================================
@@ -769,10 +773,10 @@ class AdminDashboard(tk.Frame):
         styled_label(right_side_frame, "Programme Actions", font=FONT_BUTTON, fg=ACCENT).pack(anchor="w")
         separator(right_side_frame, bg=ACCENT).pack(fill="x", pady=8, padx=5)
         add_button = tk.Button(right_side_frame, bg=BG_COLOUR3, fg=FG_COLOUR, relief="flat", text="Add Programme",
-                               font=("Helvetica", 10, "bold"), width=15)
+                               font=("Helvetica", 10, "bold"), width=15, command=self.add_programme)
         add_button.pack(pady=3)
         edit_button = tk.Button(right_side_frame, bg=BG_COLOUR3, fg=FG_COLOUR, relief="flat", text="Edit Programme",
-                                font=("Helvetica", 10, "bold"), width=15)
+                                font=("Helvetica", 10, "bold"), width=15, command=self.edit_programme)
         edit_button.pack(pady=3)
         delete_button = tk.Button(right_side_frame, bg="red", fg=FG_COLOUR, relief="flat", text="Delete Programme",
                                   font=("Helvetica", 10, "bold"), width=15, command=self.delete_programme)
@@ -811,13 +815,13 @@ class AdminDashboard(tk.Frame):
         all_programmes = list(self.ui.app.programmes.values())
 
         if not all_programmes:
-            self.prog_treeview.insert("", "end", iid="none", values=("No Programmes Here", ""))
+            self.prog_treeview.insert("", "end", iid="none", values=("No Programmes Here", "", "", ""))
             return
 
         for item in all_programmes:
 
             self.prog_treeview.insert("", "end", iid=str(item.programme_code),
-                                 values=(f"{item.programme_code}", str(item.name)))
+                                 values=(f"{item.programme_code}", str(item.name), len(item.campus_codes), len(item.modules)))
 
     def refresh_campus_treeview(self):
         for item in self.camp_treeview.get_children():
@@ -826,7 +830,7 @@ class AdminDashboard(tk.Frame):
         all_campus = list(self.ui.app.campuses.values())
 
         if not all_campus:
-            self.prog_treeview.insert("", "end", iid="none", values=("No Campuses Here", ""))
+            self.camp_treeview.insert("", "end", iid="none", values=("No Campuses Here", ""))
             return
 
         for item in all_campus:
@@ -875,10 +879,14 @@ class AdminDashboard(tk.Frame):
             messagebox.showwarning("Warning", "Could not delete Campus")
 
     def add_programme(self):
-        pass
+        self.ui.show_programme_form()
 
     def edit_programme(self):
-        pass
+        p_obj = self.selection_prog_treeview()
+        if not p_obj:
+            messagebox.showwarning("Warning", "No programme selected")
+            return
+        self.ui.show_programme_form(p_obj)
 
     def delete_programme(self):
         programme = self.selection_prog_treeview()
@@ -900,6 +908,169 @@ class AdminDashboard(tk.Frame):
         else:
             messagebox.showwarning("Warning", "Could not delete programme")
 
+class AddEditProgramme(tk.Frame):
+    def __init__(self, parent, ui, programme=None):
+        super().__init__(parent, bg=BG_COLOUR)
+        self.pack(fill="both", expand=True, pady=(20, 10), padx=20)
+        self.ui = ui
+        self.campus_codes = []
+        self.module_codes = []
+        if programme is not None:
+            self.programme = programme
+            mode = "Edit Programme"
+            self.campus_codes = list(programme.campus_codes)
+            for module in programme.modules:
+                self.module_codes.append({"module_code":module.module_code,
+                                     "name": module.name,
+                                     "year": module.year})
+        else:
+            mode = "Add Programme"
+            self.programme = None
+        print(self.module_codes)
+        # HEADER
+        InternalHeader(self, ui, f"{mode}")
 
+        row1 = tk.Frame(self, bg=BG_COLOUR)
+        row1.pack(fill="both", expand=True)
+#==============================================================================================
+        # LEFT SIDE FORM
+        left_side_frame = card(row1, bg=BG_COLOUR2)
+        left_side_frame.pack(side="left", fill="both", expand=True)
+
+        buttons_frame = tk.Frame(left_side_frame, bg=BG_COLOUR2)
+        buttons_frame.pack(anchor="w", pady=5, padx=8)
+
+        if programme:
+            save_button = tk.Button(buttons_frame, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Save", width=7)
+            save_button.grid(row=0, column=0, padx=8, sticky="w")
+        else:
+            add_button = tk.Button(buttons_frame, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Add Programme", width=12)
+            add_button.grid(row=0, column=1, padx=8, sticky="w")
+
+        cancel_button = tk.Button(buttons_frame, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Cancel", width=7, command=self.ui.show_admin_dashboard)
+        cancel_button.grid(row=0, column=2, padx=8, sticky="w")
+
+        form = tk.Frame(left_side_frame, bg=BG_COLOUR2)
+        form.pack(anchor="w")
+
+        styled_label(form, "Programme Name", bg=BG_COLOUR2, anchor="w").grid(row=0, column=0, padx=(8, 2), pady=6,
+                                                                             sticky="w")
+        self.name_entry = tk.Entry(form, bg=BG_COLOUR3, fg="white", relief="flat", font=FONT_BODY, width=27,
+                                   highlightcolor=ACCENT, highlightthickness=1)
+        self.name_entry.grid(row=0, column=1, padx=8, sticky="w")
+
+        styled_label(form, "Programme Code", bg=BG_COLOUR2, anchor="w").grid(row=1, column=0, padx=(8, 0), pady=6,
+                                                                             sticky="w")
+        self.code_entry = tk.Entry(form, bg=BG_COLOUR3, fg="white", relief="flat", font=FONT_BODY, width=27,
+                                   highlightcolor=ACCENT, highlightthickness=1)
+        self.code_entry.grid(row=1, column=1, padx=8, sticky="w", pady=(0,4))
+#===================================================================================================================================================
+        #CAMPUS FRAME
+        campus_frame = card(left_side_frame, bg=BG_COLOUR2)
+        campus_frame.pack(fill="both", expand=True)
+
+        styled_label(campus_frame, "Campuses", FONT_BUTTON, fg=ACCENT).grid(row=0, column=0, sticky="w", pady=(0, 2))
+
+        separator(campus_frame, bg=ACCENT).grid(row=1, column=0, columnspan=2, sticky="ew", pady=(2, 6))
+
+        styled_label(campus_frame, "Campus Code", FONT_BODY, fg=FG_COLOUR2).grid(row=2, column=0, sticky="w", pady=2)
+        self.campus_code = tk.Entry(campus_frame, bg=BG_COLOUR3, fg="white", relief="flat", font=FONT_BODY, width=27,
+                                    highlightcolor=ACCENT, highlightthickness=1)
+        self.campus_code.grid(row=2, column=1, padx=(10, 0), sticky="w", pady=2)
+
+        styled_label(campus_frame, "Campus Name", FONT_BODY, fg=FG_COLOUR2).grid(row=3, column=0, sticky="w", pady=2)
+        self.campus_name = tk.Entry(campus_frame, bg=BG_COLOUR3, fg="white", relief="flat", font=FONT_BODY, width=27,
+                                    highlightcolor=ACCENT, highlightthickness=1)
+        self.campus_name.grid(row=3, column=1, padx=(10, 0), sticky="w", pady=2)
+
+        self.campus_treeview = styled_treeview(campus_frame, ["Campus Code", "Campus Name"],
+                                               ["Campus Code", "Campus Name"], [10, 90])
+        self.campus_treeview.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=8)
+
+        campus_frame.grid_rowconfigure(4, weight=1)
+        campus_frame.grid_columnconfigure(1, weight=1)
+
+        self.refresh_campus_form()
+
+#==========================================================================================================================
+        #RIGHT SIDE TREEVIEW
+        right_side_frame = card(row1, bg=BG_COLOUR2)
+        right_side_frame.pack(fill="both", expand=True, side="right")
+
+        styled_label(right_side_frame, "Modules", font=FONT_BUTTON, fg=ACCENT).pack(anchor="w")
+        separator(right_side_frame, bg=ACCENT).pack(fill="x", pady=8, padx=10)
+
+        styled_label(right_side_frame, "Add the modules that are required for this programme", font=FONT_SMALL, fg=FG_COLOUR2, bg=BG_COLOUR2).pack(anchor="w", pady=(0,8))
+
+        module_row = tk.Frame(right_side_frame, bg=BG_COLOUR2)
+        module_row.pack(anchor="w",pady=4)
+
+        styled_label(module_row, "Module Code", FONT_BODY,fg=FG_COLOUR2).pack(anchor="w")
+        self.module_code = tk.Entry(module_row, bg=BG_COLOUR3, fg="white", relief="flat", font=FONT_BODY, width=27,
+                                   highlightcolor=ACCENT, highlightthickness=1)
+        self.module_code.pack(pady=(0,8))
+
+        styled_label(module_row, "Module Name", FONT_BODY, fg=FG_COLOUR2).pack(anchor="w")
+        self.module_name = tk.Entry(module_row, bg=BG_COLOUR3, fg="white", relief="flat", font=FONT_BODY, width=27,
+                                    highlightcolor=ACCENT, highlightthickness=1)
+        self.module_name.pack(pady=(0, 8))
+
+        styled_label(module_row, "Year", FONT_BODY, fg=FG_COLOUR2).pack(anchor="w")
+        self.year = styled_combobox(module_row,['1','2','3'], 5)
+        self.year.pack(pady=(0, 8), side="left", padx=3)
+
+        tk.Button(module_row, text="Add", bg="green", fg=FG_COLOUR, width=6, relief="flat", font=("Helvetica", 10, "bold"), command=self.add_module_treeview).pack(padx=3,side="left")
+        tk.Button(module_row, text="Remove Selected", bg="red", fg=FG_COLOUR, relief="flat",
+                  font=("Helvetica", 10, "bold"), command=self.remove_module_treeview).pack(padx=3,side="left")
+
+        self.module_treeview = styled_treeview(right_side_frame,["Module Code","Name", "Year"], ["Module Code", "Name", "Year"], [10,120, 10])
+        self.module_treeview.pack(fill="both", pady=8)
+
+        self.refresh_module_form()
+
+    def refresh_module_form(self):
+        for item in self.module_treeview.get_children():
+            self.module_treeview.delete(item)
+        if not self.module_codes:
+            self.module_treeview.insert("", "end", iid="none", values=("No Modules Yet", "", ""))
+            return
+
+        for index, item in enumerate(self.module_codes):
+            self.module_treeview.insert("", "end", iid=str(index),
+                                 values=(item['module_code'], item['name'], item['year']))
+
+    def remove_module_treeview(self):
+        selection = self.module_treeview.selection()
+        if not selection or selection[0] == "none":
+            return
+        idx = int(selection[0])
+        del self.module_codes[idx]
+        self.refresh_module_form()
+
+    def add_module_treeview(self):
+        code = self.module_code.get().strip().upper()
+        name = self.module_name.get()
+        year = self.year.get()
+
+        if not code or not name or not year:
+            messagebox.showerror("Error", "Please select a Module Code, Name and Year")
+            return
+        slot = {"module_code": code, "name": name, "year": year}
+        if slot in self.module_codes:
+            messagebox.showerror("Error", "Module already added")
+            return
+        self.module_codes.append(slot)
+        self.refresh_module_form()
+
+    def refresh_campus_form(self):
+        for item in self.campus_treeview.get_children():
+            self.campus_treeview.delete(item)
+        if not self.campus_codes:
+            self.campus_treeview.insert("", "end", iid="none", values=("No Campuses Yet", "", ""))
+            return
+
+        for index, item in enumerate(self.campus_codes):
+            self.campus_treeview.insert("", "end", iid=str(index),
+                                 values=(item['campus_code'], item['name']))
 if __name__=="__main__":
     StudyBuddyUI()
