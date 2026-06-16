@@ -188,7 +188,7 @@ class InternalHeader(tk.Frame):
         row.pack(fill="x")
         separator(row, ACCENT).pack(fill="x", pady=2, padx=100)
 #==============================================================================================
-# Main frames of application
+# Main frames of application - students
 class LoginFrame(tk.Frame):
     def __init__(self, parent, ui, mode="student"):
         # create instance of the login frame:
@@ -740,6 +740,7 @@ class RequestResults(tk.Frame):
             colour = "green" if slot in overlaps else ENTRY_BG
             tk.Label(slots_grid, text=f" {slot['day']} {slot['period']} ", fg="white" if slot in overlaps else FG_COLOUR2, bg=colour, font=FONT_SMALL).grid(row= i // 4, column=(i % 4) +1, padx=4)
 
+# Main frames of application - Admin
 class AdminDashboard(tk.Frame):
     def __init__(self, parent, ui):
         super().__init__(parent, bg=BG_COLOUR)
@@ -950,11 +951,11 @@ class AddEditProgramme(tk.Frame):
         buttons_frame.pack(anchor="w", pady=5, padx=8)
 
         if programme:
-            save_button = tk.Button(buttons_frame, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Save", width=7)
+            save_button = tk.Button(buttons_frame, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Save", width=7,command=self.save_programme)
             save_button.grid(row=0, column=0, padx=8, sticky="w")
         else:
             add_button = tk.Button(buttons_frame, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Add Programme",
-                                   width=12)
+                                   width=12, command=self.save_programme)
             add_button.grid(row=0, column=1, padx=8, sticky="w")
 
         cancel_button = tk.Button(buttons_frame, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Cancel", width=7,
@@ -982,16 +983,21 @@ class AddEditProgramme(tk.Frame):
 
         styled_label(campus_frame, "Campuses", FONT_BUTTON, fg=ACCENT).grid(row=0, column=0, sticky="w", pady=(0, 2))
 
-        separator(campus_frame, bg=ACCENT).grid(row=1, column=0, columnspan=2, sticky="ew", pady=(2, 6))
+        separator(campus_frame, bg=ACCENT).grid(row=1, column=0, columnspan=4, sticky="ew", pady=(2, 6))
 
         styled_label(campus_frame, "Campus Code", FONT_BODY, fg=FG_COLOUR2).grid(row=2, column=0, sticky="w", pady=2)
-        self.campus_code = tk.Entry(campus_frame, bg=BG_COLOUR3, fg="white", relief="flat", font=FONT_BODY, width=27,
-                                    highlightcolor=ACCENT, highlightthickness=1)
+        all_campuses = list(self.ui.app.campuses.keys())
+
+        self.campus_code = styled_combobox(campus_frame,all_campuses,10)
         self.campus_code.grid(row=2, column=1, padx=(10, 0), sticky="w", pady=2)
+        tk.Button(campus_frame, text="Add", bg="green", fg=FG_COLOUR, width=6, relief="flat",
+                  font=("Helvetica", 10, "bold"), command=self.add_campus_treeview).grid(row=2, column=2, padx=(2, 2), sticky="w", pady=2)
+        tk.Button(campus_frame, text="Remove Selected", bg="red", fg=FG_COLOUR, relief="flat",
+                  font=("Helvetica", 10, "bold"),command=self.remove_campus_treeview).grid(row=2, column=3, padx=(0, 0), sticky="w", pady=2)
 
         self.campus_treeview = styled_treeview(campus_frame, ["Campus Code"],
                                                ["Campus Code"], [10])
-        self.campus_treeview.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=8)
+        self.campus_treeview.grid(row=4, column=0, columnspan=4, sticky="nsew", pady=8)
 
         campus_frame.grid_rowconfigure(4, weight=1)
         campus_frame.grid_columnconfigure(1, weight=1)
@@ -1117,6 +1123,61 @@ class AddEditProgramme(tk.Frame):
         for index, item in enumerate(self.campus_codes):
             self.campus_treeview.insert("", "end", iid=str(index),
                                  values=item)
+
+    def remove_campus_treeview(self):
+        selection = self.campus_treeview.selection()
+        if not selection or selection[0] == "none":
+            return
+        idx = int(selection[0])
+        del self.campus_codes[idx]
+        self.refresh_campus_form()
+
+    def add_campus_treeview(self):
+        code = self.campus_code.get().strip().upper()
+        if not code:
+            messagebox.showerror("Error", "Please select a Campus Code")
+            return
+        if code in self.campus_codes:
+            messagebox.showerror("Error", f"Campus code '{code}' already exists.")
+            return
+        self.campus_codes.append(code)
+        self.refresh_campus_form()
+
+#=======================================================================================================================
+    def save_programme(self):
+        p_name = self.name_entry.get().strip()
+        p_code = self.code_entry.get().strip().upper()
+
+        if not p_name:
+            messagebox.showerror("Error", "Please enter a Programme Name.")
+            return
+        if not p_code or len(p_code) != 5:
+            messagebox.showerror("Error", "Please enter a Programme Code.")
+            return
+        if not self.campus_codes:
+            messagebox.showerror("Error", "A programme must contain at least one campus.")
+            return
+        if not self.module_codes:
+            messagebox.showerror("Error", "A programme must contain at least one module.")
+            return
+        # Determine editing or adding
+        is_edit_mode = self.programme is not None
+        old_code = self.programme.programme_code if is_edit_mode else None
+
+        valid, error_msg = self.ui.app.programme_add_edit(
+            is_edit=is_edit_mode,
+            old_code=old_code,
+            new_code=p_code,
+            name=p_name,
+            modules_list=self.module_codes,
+            campuses_list=self.campus_codes
+        )
+
+        if valid:
+            messagebox.showinfo("Success", f"Programme '{p_code}' successfully saved.")
+            self.ui.show_admin_dashboard()
+        else:
+            messagebox.showerror("Error", error_msg)
 
 class EditModule(tk.Frame):
     def __init__(self, parent, ui, module_dict, parent_form):

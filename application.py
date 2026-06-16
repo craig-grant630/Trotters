@@ -1,5 +1,5 @@
 from data_storage import FileHandler
-from classes import Student, Requests
+from classes import Student, Requests, Programme, Module
 
 class StudyBuddyApp:
     def __init__(self):
@@ -13,13 +13,14 @@ class StudyBuddyApp:
             self.store.set_required_programme_data()
         if self.store.required_admin_data_needed():
             self.store.set_required_admin_data()
-
+        # Load all data into memory
         self.programmes = self.store.load_programmes()
         self.campuses = self.store.load_campuses()
         self.students = self.store.load_students()
         self.requests = self.store.load_requests()
         self.admin = self.store.load_admin()
 
+        # Find all modules and all module codes
         self.all_modules = []
         self.all_module_codes = []
 
@@ -86,6 +87,7 @@ class StudyBuddyApp:
             return False, "WARNING:  Password does not match."
         else:
             return True, admin
+
 # Request lookups by student ID and request ID
 # Request CRUD methods
 #=======================================================================================================================
@@ -174,6 +176,8 @@ class StudyBuddyApp:
 
         self.store.requests_save(self.requests)
         return True, "Request deleted successfully"
+
+# Campus CRUD functionality and lookups
 # ======================================================================================================================
     def campus_name(self, campus_code):
         for campus in self.campuses.values():
@@ -227,7 +231,7 @@ class StudyBuddyApp:
 
         # Return the counts back to the UI
         return True, student_count, request_count
-# Find Match results
+# Find Match results and score functionality
 #===================================================
     def find_matches(self, request):
         source  = request
@@ -278,8 +282,8 @@ class StudyBuddyApp:
 
         return score
 
+# Programme CRUD functionality
 #=====================================================
-
     def get_programme(self, code):
         if not code:
             return None
@@ -328,3 +332,66 @@ class StudyBuddyApp:
                 if code == module.module_code:
                     return module
         return None
+
+    def programme_add_edit(self, is_edit, old_code, new_code, name, modules_list, campuses_list):
+        if not is_edit and new_code in self.programmes:
+            return False, f"Programme code '{new_code}' already exists."
+
+        # Convert the updated module list to module objects
+        compiled_modules = [Module(m['module_code'], m['name'], int(m['year'])) for m in modules_list]
+
+        if is_edit:
+            prog_obj = self.programmes.get(old_code)
+            if not prog_obj:
+                return False, "The programme being modified could not be found."
+
+            self.linked_deletion_and_updates(old_code, new_code, compiled_modules, campuses_list)
+            prog_obj.name = name
+            prog_obj.programme_code = new_code
+        else:
+            self.programmes[new_code] = Programme(new_code, name, campuses_list, compiled_modules)
+
+        # Save programmes, requests and students and update all modules and module codes
+        self.store.programme_save(self.programmes)
+        self.store.requests_save(self.requests)
+        self.store.save_students(self.students)
+
+        self.all_modules = [m for p in self.programmes.values() for m in p.modules]
+        self.all_module_codes = [m.module_code for m in self.all_modules]
+
+        return True, "Saved successfully"
+
+    def linked_deletion_and_updates(self, old_code, new_code, compiled_modules, campuses_list):
+        # Directly deletes and updates students and requests based on allowed values
+        prog_obj = self.programmes.get(old_code)
+
+        target_modules = {m.module_code.upper() for m in compiled_modules}
+        target_campuses = {c.upper() for c in campuses_list}
+
+        # Update programme
+        prog_obj.modules = compiled_modules
+        prog_obj.campus_codes = [c.upper() for c in campuses_list]
+
+        if old_code != new_code:
+            self.programmes[new_code] = self.programmes.pop(old_code)
+
+        # Delete Students if their campus was deleted, otherwise update code link
+        for s_id, student in list(self.students.items()):
+            if student.programme_code == old_code:
+                if student.campus_code.upper() not in target_campuses:
+                    self.students.pop(s_id, None)
+                else:
+                    student.programme_code = new_code
+
+        active_student_ids = {str(s_id) for s_id in self.students.keys()}
+
+        # Delete Requests if student is deleted or if the requested module was deleted
+        for r_id, request in list(self.requests.items()):
+            if request.programme_code in (old_code, new_code):
+                student_alive = str(request.student_id) in active_student_ids and str(r_id) in active_student_ids
+                module_still_exists = request.module_code.upper() in target_modules
+
+                if not student_alive or not module_still_exists:
+                    self.requests.pop(r_id, None)
+                else:
+                    request.programme_code = new_code
