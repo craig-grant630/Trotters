@@ -20,6 +20,15 @@ class StudyBuddyApp:
         self.requests = self.store.load_requests()
         self.admin = self.store.load_admin()
 
+        self.all_modules = []
+        self.all_module_codes = []
+
+        for programme in self.programmes.values():
+            self.all_modules.extend(programme.modules)
+
+        for module in self.all_modules:
+            self.all_module_codes.append(module.module_code)
+
 # Register validations and login authentication
     #=========================================================================================================
     def check_register_credentials(self, student_id, password1, password2, campus_code, programme_code, year, name):
@@ -311,3 +320,11 @@ class StudyBuddyApp:
 
         # Return the counts back to the UI
         return True, student_count, request_count
+
+    def get_module(self, code):
+        for programme in list(self.programmes.values()):
+            programme_modules = programme.modules
+            for module in programme_modules:
+                if code == module.module_code:
+                    return module
+        return None
