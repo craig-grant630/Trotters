@@ -1,48 +1,222 @@
 [
     {
         "request_id": 1,
-        "student_id": "1111111111",
+        "student_id": "1110000000",
         "campus_code": "PCK",
-        "programme_code": "BANAV",
-        "year": 1,
-        "module_code": "BNAV12",
+        "programme_code": "BAENT",
+        "year": "3",
+        "module_code": "BENT31",
         "availability": [
             {
                 "day": "Monday",
-                "period": "Afternoon"
-            },
-            {
-                "day": "Tuesday",
                 "period": "Afternoon"
             }
         ]
     },
     {
         "request_id": 2,
-        "student_id": "1111100000",
-        "campus_code": "PCK",
-        "programme_code": "BAMKT",
-        "year": 2,
-        "module_code": "BMKT21",
+        "student_id": "1110000000",
+        "campus_code": "NYC",
+        "programme_code": "BAENT",
+        "year": "3",
+        "module_code": "BENT32",
         "availability": [
             {
-                "day": "Monday",
-                "period": "Afternoon"
+                "day": "Wednesday",
+                "period": "Morning"
             }
         ]
     },
     {
         "request_id": 3,
-        "student_id": "1111100000",
+        "student_id": "1110000000",
+        "campus_code": "PAR",
+        "programme_code": "BAENT",
+        "year": "3",
+        "module_code": "BENT31",
+        "availability": [
+            {
+                "day": "Friday",
+                "period": "Evening"
+            }
+        ]
+    },
+    {
+        "request_id": 4,
+        "student_id": "1111000000",
+        "campus_code": "PCK",
+        "programme_code": "BSCSC",
+        "year": "1",
+        "module_code": "BSCS11",
+        "availability": [
+            {
+                "day": "Tuesday",
+                "period": "Morning"
+            }
+        ]
+    },
+    {
+        "request_id": 5,
+        "student_id": "1111000000",
         "campus_code": "NYC",
+        "programme_code": "BSCSC",
+        "year": "1",
+        "module_code": "BSCS12",
+        "availability": [
+            {
+                "day": "Thursday",
+                "period": "Afternoon"
+            }
+        ]
+    },
+    {
+        "request_id": 6,
+        "student_id": "1111000000",
+        "campus_code": "PCK",
+        "programme_code": "BSCSC",
+        "year": "1",
+        "module_code": "BSCS13",
+        "availability": [
+            {
+                "day": "Friday",
+                "period": "Afternoon"
+            }
+        ]
+    },
+    {
+        "request_id": 7,
+        "student_id": "1111100000",
+        "campus_code": "PAR",
         "programme_code": "BAMKT",
-        "year": 2,
+        "year": "2",
         "module_code": "BMKT21",
         "availability": [
             {
                 "day": "Monday",
+                "period": "Morning"
+            }
+        ]
+    },
+    {
+        "request_id": 8,
+        "student_id": "1111100000",
+        "campus_code": "PAR",
+        "programme_code": "BAMKT",
+        "year": "2",
+        "module_code": "BMKT22",
+        "availability": [
+            {
+                "day": "Wednesday",
                 "period": "Afternoon"
-            },
+            }
+        ]
+    },
+    {
+        "request_id": 9,
+        "student_id": "1111100000",
+        "campus_code": "PCK",
+        "programme_code": "BAMKT",
+        "year": "2",
+        "module_code": "BMKT23",
+        "availability": [
+            {
+                "day": "Thursday",
+                "period": "Evening"
+            }
+        ]
+    },
+    {
+        "request_id": 10,
+        "student_id": "1111110000",
+        "campus_code": "PCK",
+        "programme_code": "BANAV",
+        "year": "1",
+        "module_code": "BNAV11",
+        "availability": [
+            {
+                "day": "Monday",
+                "period": "Afternoon"
+            }
+        ]
+    },
+    {
+        "request_id": 11,
+        "student_id": "1111110000",
+        "campus_code": "PCK",
+        "programme_code": "BANAV",
+        "year": "1",
+        "module_code": "BNAV11",
+        "availability": [
+            {
+                "day": "Tuesday",
+                "period": "Evening"
+            }
+        ]
+    },
+    {
+        "request_id": 12,
+        "student_id": "1111110000",
+        "campus_code": "PCK",
+        "programme_code": "BANAV",
+        "year": "1",
+        "module_code": "BNAV11",
+        "availability": [
+            {
+                "day": "Thursday",
+                "period": "Morning"
+            }
+        ]
+    },
+    {
+        "request_id": 13,
+        "student_id": "1111111000",
+        "campus_code": "PCK",
+        "programme_code": "BACAT",
+        "year": "3",
+        "module_code": "BCAT12",
+        "availability": [
+            {
+                "day": "Wednesday",
+                "period": "Morning"
+            }
+        ]
+    },
+    {
+        "request_id": 14,
+        "student_id": "1111111000",
+        "campus_code": "PCK",
+        "programme_code": "BACAT",
+        "year": "3",
+        "module_code": "BCAT12",
+        "availability": [
+            {
+                "day": "Friday",
+                "period": "Afternoon"
+            }
+        ]
+    },
+    {
+        "request_id": 15,
+        "student_id": "1111111000",
+        "campus_code": "PCK",
+        "programme_code": "BACAT",
+        "year": "3",
+        "module_code": "BCAT12",
+        "availability": [
+            {
+                "day": "Monday",
+                "period": "Evening"
+            }
+        ]
+    },
+    {
+        "request_id": 16,
+        "student_id": "1111111100",
+        "campus_code": "PCK",
+        "programme_code": "BAMKT",
+        "year": "2",
+        "module_code": "BMKT21",
+        "availability": [
             {
                 "day": "Tuesday",
                 "period": "Afternoon"
@@ -50,19 +224,113 @@
         ]
     },
     {
-        "request_id": 4,
+        "request_id": 17,
         "student_id": "1111111100",
         "campus_code": "PCK",
         "programme_code": "BAMKT",
-        "year": 2,
-        "module_code": "BMKT21",
+        "year": "2",
+        "module_code": "BMKT22",
+        "availability": [
+            {
+                "day": "Thursday",
+                "period": "Morning"
+            }
+        ]
+    },
+    {
+        "request_id": 18,
+        "student_id": "1111111100",
+        "campus_code": "PCK",
+        "programme_code": "BAMKT",
+        "year": "2",
+        "module_code": "BMKT23",
+        "availability": [
+            {
+                "day": "Friday",
+                "period": "Evening"
+            }
+        ]
+    },
+    {
+        "request_id": 19,
+        "student_id": "1111111110",
+        "campus_code": "PCK",
+        "programme_code": "BAENT",
+        "year": "2",
+        "module_code": "BENT21",
         "availability": [
             {
                 "day": "Monday",
-                "period": "Afternoon"
-            },
+                "period": "Morning"
+            }
+        ]
+    },
+    {
+        "request_id": 20,
+        "student_id": "1111111110",
+        "campus_code": "PCK",
+        "programme_code": "BAENT",
+        "year": "2",
+        "module_code": "BENT22",
+        "availability": [
             {
                 "day": "Wednesday",
+                "period": "Afternoon"
+            }
+        ]
+    },
+    {
+        "request_id": 21,
+        "student_id": "1111111110",
+        "campus_code": "PCK",
+        "programme_code": "BAENT",
+        "year": "2",
+        "module_code": "BENT23",
+        "availability": [
+            {
+                "day": "Thursday",
+                "period": "Evening"
+            }
+        ]
+    },
+    {
+        "request_id": 22,
+        "student_id": "1111111111",
+        "campus_code": "PCK",
+        "programme_code": "BANAV",
+        "year": "1",
+        "module_code": "BNAV11",
+        "availability": [
+            {
+                "day": "Tuesday",
+                "period": "Morning"
+            }
+        ]
+    },
+    {
+        "request_id": 23,
+        "student_id": "1111111111",
+        "campus_code": "PCK",
+        "programme_code": "BANAV",
+        "year": "1",
+        "module_code": "BNAV12",
+        "availability": [
+            {
+                "day": "Wednesday",
+                "period": "Evening"
+            }
+        ]
+    },
+    {
+        "request_id": 24,
+        "student_id": "1111111111",
+        "campus_code": "PCK",
+        "programme_code": "BANAV",
+        "year": "1",
+        "module_code": "BNAV11",
+        "availability": [
+            {
+                "day": "Friday",
                 "period": "Afternoon"
             }
         ]
