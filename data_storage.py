@@ -239,7 +239,50 @@ class FileHandler:
 
     def set_sample_requests(self):
 
-        requests = {"1":Requests(1, "1110000000","PCK","BAENT",1,"bent11",[{"day" : "Monday"}, {"period":"Afternoon"}])}
+        requests = {
+            # 1. Craig Grant - BAENT, Year 3
+            "1": Requests(1, "1110000000", "PCK", "BAENT", "3", "BENT31", [{"day": "Monday", "period": "Afternoon"}]),
+            "2": Requests(2, "1110000000", "NYC", "BAENT", "3", "BENT32", [{"day": "Wednesday", "period": "Morning"}]),
+            "3": Requests(3, "1110000000", "PAR", "BAENT", "3", "BENT31", [{"day": "Friday", "period": "Evening"}]),
+
+            # 2. Iain Grant - BSCSC, Year 1
+            "4": Requests(4, "1111000000", "PCK", "BSCSC", "1", "BSCS11", [{"day": "Tuesday", "period": "Morning"}]),
+            "5": Requests(5, "1111000000", "NYC", "BSCSC", "1", "BSCS12", [{"day": "Thursday", "period": "Afternoon"}]),
+            "6": Requests(6, "1111000000", "PCK", "BSCSC", "1", "BSCS13", [{"day": "Friday", "period": "Afternoon"}]),
+
+            # 3. John Grant - BAMKT, Year 2
+            "7": Requests(7, "1111100000", "PAR", "BAMKT", "2", "BMKT21", [{"day": "Monday", "period": "Morning"}]),
+            "8": Requests(8, "1111100000", "PAR", "BAMKT", "2", "BMKT22",[{"day": "Wednesday", "period": "Afternoon"}]),
+            "9": Requests(9, "1111100000", "PCK", "BAMKT", "2", "BMKT23", [{"day": "Thursday", "period": "Evening"}]),
+
+            # 4. Lyndsay Grant - BANAV, Year 1
+            "10": Requests(10, "1111110000", "PCK", "BANAV", "1", "BNAV11", [{"day": "Monday", "period": "Afternoon"}]),
+            "11": Requests(11, "1111110000", "PCK", "BANAV", "1", "BNAV11", [{"day": "Tuesday", "period": "Evening"}]),
+            "12": Requests(12, "1111110000", "PCK", "BANAV", "1", "BNAV11", [{"day": "Thursday", "period": "Morning"}]),
+
+            # 5. Laura Grant - BACAT, PCK, Year 3
+            "13": Requests(13, "1111111000", "PCK", "BACAT", "3", "BCAT12",
+                           [{"day": "Wednesday", "period": "Morning"}]),
+            "14": Requests(14, "1111111000", "PCK", "BACAT", "3", "BCAT12", [{"day": "Friday", "period": "Afternoon"}]),
+            "15": Requests(15, "1111111000", "PCK", "BACAT", "3", "BCAT12", [{"day": "Monday", "period": "Evening"}]),
+
+            # 6. Jamie Lumsden - BAMKT, PCK, Year 2
+            "16": Requests(16, "1111111100", "PCK", "BAMKT", "2", "BMKT21",
+                           [{"day": "Tuesday", "period": "Afternoon"}]),
+            "17": Requests(17, "1111111100", "PCK", "BAMKT", "2", "BMKT22", [{"day": "Thursday", "period": "Morning"}]),
+            "18": Requests(18, "1111111100", "PCK", "BAMKT", "2", "BMKT23", [{"day": "Friday", "period": "Evening"}]),
+
+            # 7. Craig Donald - BAENT, PCK, Year 2
+            "19": Requests(19, "1111111110", "PCK", "BAENT", "2", "BENT21", [{"day": "Monday", "period": "Morning"}]),
+            "20": Requests(20, "1111111110", "PCK", "BAENT", "2", "BENT22",
+                           [{"day": "Wednesday", "period": "Afternoon"}]),
+            "21": Requests(21, "1111111110", "PCK", "BAENT", "2", "BENT23", [{"day": "Thursday", "period": "Evening"}]),
+
+            # 8. Lewis McCreadie - BANAV, PCK, Year 1
+            "22": Requests(22, "1111111111", "PCK", "BANAV", "1", "BNAV11", [{"day": "Tuesday", "period": "Morning"}]),
+            "23": Requests(23, "1111111111", "PCK", "BANAV", "1", "BNAV12",[{"day": "Wednesday", "period": "Evening"}]),
+            "24": Requests(24, "1111111111", "PCK", "BANAV", "1", "BNAV11", [{"day": "Friday", "period": "Afternoon"}])
+        }
         self.requests_save(requests)
 
     def set_sample_students(self):

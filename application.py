@@ -18,6 +18,8 @@ class StudyBuddyApp:
         if self.store.sample_students_data_needed():
         # give sample data (students)
             self.store.set_sample_students()
+        if self.store.sample_requests_data_needed():
+            self.store.set_sample_requests()
 
         # Load all data into memory
         self.programmes = self.store.load_programmes()
