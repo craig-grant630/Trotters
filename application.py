@@ -96,7 +96,6 @@ class StudyBuddyApp:
             return True, admin
 
     def delete_profile(self, student_id):
-
         if student_id in self.students:
             del self.students[student_id]
         requests = self.get_requests_for_student(student_id)
@@ -107,11 +106,7 @@ class StudyBuddyApp:
         self.store.requests_save(self.requests)
         self.store.save_students(self.students)
 
-    # =========================================================================================================
-    # Students Update profile functionality
-    # =========================================================================================================
     def check_update_credentials(self, student_id, name, password, campus_code, programme_code, year):
-        """Validates student profile updates without checking for primary key availability conflicts."""
         if not name:
             return False, "WARNING: \n Name must be provided."
         if not password:
@@ -123,7 +118,7 @@ class StudyBuddyApp:
         if not year:
             return False, "WARNING: \n Year of Study must be provided via dropdown."
 
-        # Validate that the selected campus actually runs that specific programme
+        # Validate that the selected campus actually runs in the programme
         for programme in self.programmes.values():
             if programme_code == programme.programme_code:
                 if campus_code not in programme.campus_codes:
@@ -132,17 +127,14 @@ class StudyBuddyApp:
         return True, None
 
     def update_student(self, student_id, name, password, campus_code, programme_code, year):
-        """Updates the student instance fields inside memory storage dictionary and commits changes to files."""
         student = self.students.get(student_id)
         if student:
-            # Overwrite properties with new validated form values
             student.name = name
             student.password = password
             student.programme_code = programme_code
             student.campus_code = campus_code
             student.year_of_study = year
 
-            # Commit the dictionary update down to your text/JSON persistent layer
             self.store.save_students(self.students)
             return True
         return False

@@ -164,6 +164,10 @@ class StudyBuddyUI:
         self.clear()
         AdminStudents(self.container, self)
 
+    def show_edit_student(self):
+        self.clear()
+        EditStudent(self.container, self)
+
 # =====================================================================================
 # Header frames used withing main frames of application
 class WelcomeHeader(tk.Frame):
@@ -418,7 +422,15 @@ class Dashboard(tk.Frame):
                                   font=("Helvetica", 10, "bold"), width=15, command=self.find_matches)
         matches_button.pack(pady=3)
 
+        styled_label(left_side_frame, "Profile Actions", font=FONT_BUTTON, fg=ACCENT).pack(anchor="w", pady=(15,0))
+        separator(left_side_frame, bg=ACCENT).pack(fill="x", pady=8, padx=10)
 
+        edit_profile_button = tk.Button(left_side_frame, bg=BG_COLOUR3, fg=FG_COLOUR, relief="flat", text="Edit Profile",
+                                font=("Helvetica", 10, "bold"), width=15, command=self.edit_profile)
+        edit_profile_button.pack(pady=3)
+        delete_profile_button = tk.Button(left_side_frame, bg="red", fg=FG_COLOUR, relief="flat", text="Delete Profile",
+                                  font=("Helvetica", 10, "bold"), width=15, command=self.delete_profile)
+        delete_profile_button.pack(pady=3)
         #===============================================================================================================
         right_side_frame = card(row2, bg=BG_COLOUR2)
         right_side_frame.pack(side="left", fill="both", expand=True)
@@ -482,6 +494,17 @@ class Dashboard(tk.Frame):
             messagebox.showwarning("Warning", "No requests selected")
             return
         self.ui.show_request_matches(r_obj)
+
+    def delete_profile(self):
+        student= self.ui.user
+        if not messagebox.askyesno("Delete Profile",
+                                   f"Are you sure you want to delete profile: {student.student_id}?\nThis will permanently remove the profile and requests from the system."):
+            return
+        self.ui.app.delete_profile(student.student_id)
+        self.ui.show_dashboard()
+
+    def edit_profile(self):
+        self.ui.show_edit_student()
 
 class AddEditRequest(tk.Frame):
     def __init__(self, parent, ui, request=None):
@@ -746,6 +769,140 @@ class RequestResults(tk.Frame):
         for i, slot in enumerate(r.availability,0):
             colour = "green" if slot in overlaps else ENTRY_BG
             tk.Label(slots_grid, text=f" {slot['day']} {slot['period']} ", fg="white" if slot in overlaps else FG_COLOUR2, bg=colour, font=FONT_SMALL).grid(row= i // 4, column=(i % 4) +1, padx=4)
+
+class EditStudent(tk.Frame):
+    def __init__(self, parent, ui):
+        super().__init__(parent, bg=BG_COLOUR)
+        self.pack(fill="both", expand=True)
+        self.ui = ui
+        self.register_msg = tk.StringVar()
+
+        student = self.ui.user
+
+        outer = tk.Frame(self, bg=BG_COLOUR2, padx=40, pady=20)
+        outer.place(relx=0.5, rely=0.5, anchor="center")
+
+        # Note: Set parent to 'self' or 'outer' depending on your header layout preference
+        InternalHeader(outer, ui, "Edit Profile")
+
+        fields = [
+            ("Student ID (10 digits)", False),
+            ("Full Name", False),
+            ("Password", True),
+        ]
+        self.entries = {}
+        for label, show in fields:
+            row2 = tk.Frame(outer, bg=BG_COLOUR2)
+            row2.pack(fill="x")
+            row2.grid_columnconfigure(0, minsize=180, uniform="reg_col")
+            styled_label(row2, label, bg=BG_COLOUR2, font=FONT_BODY,
+                         fg=FG_COLOUR2).grid(row=0, column=0, sticky="e", padx=8, pady=5)
+
+            entry = tk.Entry(row2, bg=BG_COLOUR3, fg="white", relief="flat", font=FONT_BODY, width=27,
+                             show="*" if show else None, highlightcolor=ACCENT, highlightthickness=1)
+
+            self.entries[label] = entry
+            entry.grid(row=0, column=1, sticky="w", padx=8)
+
+        separator(outer).pack(fill="x", pady=10)
+
+        self.row2 = tk.Frame(outer, bg=BG_COLOUR2)
+        self.row2.pack(fill="x")
+        self.row2.grid_columnconfigure(0, minsize=180, uniform="reg_col")
+
+        # Row 0: Programme
+        prog_options = []
+        for p in self.ui.app.programmes.values():
+            prog_options.append(f"{p.programme_code} - {p.name}")
+        styled_label(self.row2, "Programme:", bg=BG_COLOUR2, font=FONT_BODY, fg=FG_COLOUR2).grid(row=0, column=0,
+                                                                                                 sticky="e", padx=6)
+        self.programme_drop = styled_combobox(self.row2, prog_options, 26)
+        self.programme_drop.grid(row=0, column=1, sticky="w", padx=6, pady=5)
+
+        camp_options = []
+        for c in self.ui.app.campuses.values():
+            camp_options.append(f"{c.name} - {c.campus_code}")
+        styled_label(self.row2, "Campus:", bg=BG_COLOUR2, font=FONT_BODY, fg=FG_COLOUR2).grid(row=1, column=0,
+                                                                                              sticky="e", padx=6)
+        self.campus_drop = styled_combobox(self.row2, camp_options, 26)
+        self.campus_drop.grid(row=1, column=1, sticky="w", padx=6, pady=5)
+
+        styled_label(self.row2, "Year of Study:", bg=BG_COLOUR2, font=FONT_BODY, fg=FG_COLOUR2).grid(row=2, column=0,
+                                                                                                     sticky="e", padx=6)
+        self.yos = styled_combobox(self.row2, ["  1", "  2", "  3"], 3)
+        self.yos.grid(row=2, column=1, sticky="w", padx=6, pady=5)
+
+        register_frame_btn = tk.Button(self.row2, text="Save Changes", bg=BG_COLOUR3, fg="white", font=FONT_BUTTON,
+                                       relief="flat",
+                                       borderwidth=1, width=15, command=self.save_student_changes)
+        register_frame_btn.grid(row=3, column=1, sticky="e", pady=(40, 5), padx=10)
+
+        self.msg_label = tk.Label(self.row2, bg=BG_COLOUR2, fg="red", textvariable=self.register_msg, font=FONT_MSG,
+                                  wraplength=180)
+        self.msg_label.grid(row=3, column=0, sticky="sw", pady=5)
+
+        if student is not None:
+            # Fill in all the students details
+            self.entries["Student ID (10 digits)"].insert(0, str(student.student_id))
+            self.entries["Full Name"].insert(0, str(student.name))
+            self.entries["Password"].insert(0, str(student.password))
+
+            self.entries["Student ID (10 digits)"].config(state="disabled")
+            self.programme_drop.config(state="disabled")
+            self.entries["Student ID (10 digits)"].bind("<Key>", lambda e: "break")
+
+            for item in prog_options:
+                if item.startswith(f"{student.programme_code} -"):
+                    self.programme_drop.set(item)
+                    break
+
+            for item in camp_options:
+                if item.endswith(f"- {student.campus_code}"):
+                    self.campus_drop.set(item)
+                    break
+
+            clean_yos = str(student.year_of_study).strip()
+            for opt in ["  1", "  2", "  3"]:
+                if opt.strip() == clean_yos:
+                    self.yos.set(opt)
+                    break
+
+    def save_student_changes(self):
+        student = self.ui.user
+        name = self.entries["Full Name"].get().strip()
+        password = self.entries["Password"].get()
+        prog_sel = self.programme_drop.get()
+        camp_sel = self.campus_drop.get()
+
+        try:
+            prog_code = prog_sel.split("-")[0].strip()
+            camp_code = camp_sel.split("-")[1].strip()
+        except IndexError:
+            prog_code = None
+            camp_code = None
+
+        year = self.yos.get().strip()
+
+        valid, msg = self.ui.app.check_update_credentials(
+            student.student_id, name, password, camp_code, prog_code, year
+        )
+
+        if not valid:
+            self.register_msg.set(msg)
+            self.msg_label.config(fg="red")
+            return
+
+        success = self.ui.app.update_student(
+            student.student_id, name, password, camp_code, prog_code, year)
+
+        if success:
+            self.register_msg.set("Profile changes saved successfully!")
+            self.msg_label.config(fg="green")
+            self.ui.user = self.ui.app.students[student.student_id]
+            self.ui.show_dashboard()
+        else:
+            self.register_msg.set("Error: Profile could not be found.")
+            self.msg_label.config(fg="red")
 
 # Main frames of application - Admin
 class AdminDashboard(tk.Frame):
