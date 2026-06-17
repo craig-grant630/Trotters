@@ -18,9 +18,7 @@ class StudyBuddyApp:
         if self.store.sample_students_data_needed():
         # give sample data (students)
             self.store.set_sample_students()
-        if self.store.sample_requests_data_needed():
-            # give sample data (requests)
-            self.store.set_sample_requests()
+
         # Load all data into memory
         self.programmes = self.store.load_programmes()
         self.campuses = self.store.load_campuses()
@@ -39,6 +37,7 @@ class StudyBuddyApp:
             self.all_module_codes.append(module.module_code)
 
 # Register validations and login authentication
+# Students CRUD functionality
     #=========================================================================================================
     def check_register_credentials(self, student_id, password1, password2, campus_code, programme_code, year, name):
         if student_id in self.students:
@@ -96,7 +95,59 @@ class StudyBuddyApp:
         else:
             return True, admin
 
-# Request lookups by student ID and request ID
+    def delete_profile(self, student_id):
+
+        if student_id in self.students:
+            del self.students[student_id]
+        requests = self.get_requests_for_student(student_id)
+
+        for r in requests:
+            del self.requests[r.request_id]
+
+        self.store.requests_save(self.requests)
+        self.store.save_students(self.students)
+
+    # =========================================================================================================
+    # Students Update profile functionality
+    # =========================================================================================================
+    def check_update_credentials(self, student_id, name, password, campus_code, programme_code, year):
+        """Validates student profile updates without checking for primary key availability conflicts."""
+        if not name:
+            return False, "WARNING: \n Name must be provided."
+        if not password:
+            return False, "WARNING: \n Password is empty. Please enter."
+        if not programme_code:
+            return False, "WARNING: \n Program Code must be provided."
+        if not campus_code:
+            return False, "WARNING: \n Campus Code must be provided."
+        if not year:
+            return False, "WARNING: \n Year of Study must be provided via dropdown."
+
+        # Validate that the selected campus actually runs that specific programme
+        for programme in self.programmes.values():
+            if programme_code == programme.programme_code:
+                if campus_code not in programme.campus_codes:
+                    return False, "WARNING: \n Selected Campus is not available for this Programme."
+
+        return True, None
+
+    def update_student(self, student_id, name, password, campus_code, programme_code, year):
+        """Updates the student instance fields inside memory storage dictionary and commits changes to files."""
+        student = self.students.get(student_id)
+        if student:
+            # Overwrite properties with new validated form values
+            student.name = name
+            student.password = password
+            student.programme_code = programme_code
+            student.campus_code = campus_code
+            student.year_of_study = year
+
+            # Commit the dictionary update down to your text/JSON persistent layer
+            self.store.save_students(self.students)
+            return True
+        return False
+
+    # Request lookups by student ID and request ID
 # Request CRUD methods
 #=======================================================================================================================
     def get_requests_for_student(self, student_id):

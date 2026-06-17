@@ -114,7 +114,7 @@ class FileHandler:
         if not requests:
             return 1
         else:
-            return max(r.request_id for r in requests.values()) + 1
+            return max(int(r.request_id) for r in requests.values()) + 1
 #=======================================================================================================================
     def admin_save(self, admin):
         result = []
@@ -239,7 +239,7 @@ class FileHandler:
 
     def set_sample_requests(self):
 
-        requests = {"1":Requests("1", "1110000000","PCK","BAENT",1,"bent11",[{"day" : "Monday"}, {"period":"Afternoon"}])}
+        requests = {"1":Requests(1, "1110000000","PCK","BAENT",1,"bent11",[{"day" : "Monday"}, {"period":"Afternoon"}])}
         self.requests_save(requests)
 
     def set_sample_students(self):

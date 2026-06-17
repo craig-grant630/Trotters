@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from tkinter.messagebox import showerror
 
 from application import StudyBuddyApp
 from classes import VALID_DAYS, VALID_PERIODS
@@ -160,6 +159,10 @@ class StudyBuddyUI:
     def show_campus_form(self, campus=None):
         self.clear()
         AddEditCampus(self.container, self, campus)
+
+    def show_admin_students(self):
+        self.clear()
+        AdminStudents(self.container, self)
 
 # =====================================================================================
 # Header frames used withing main frames of application
@@ -400,7 +403,7 @@ class Dashboard(tk.Frame):
         left_side_frame = card(row2, bg=BG_COLOUR2)
         left_side_frame.pack(side="left", fill="both", expand=True)
 
-        styled_label(left_side_frame, "Actions", font=FONT_BUTTON, fg=ACCENT).pack(anchor="w")
+        styled_label(left_side_frame, "Request Actions", font=FONT_BUTTON, fg=ACCENT).pack(anchor="w")
         separator(left_side_frame, bg=ACCENT).pack(fill="x", pady=8, padx=10)
         add_button = tk.Button(left_side_frame, bg=BG_COLOUR3, fg=FG_COLOUR,relief="flat", text="Add Request",
                                font=("Helvetica", 10, "bold"), width=15, command=self.new_request)
@@ -413,7 +416,9 @@ class Dashboard(tk.Frame):
         delete_button.pack(pady=3)
         matches_button = tk.Button(left_side_frame, bg=ACCENT, fg=FG_COLOUR, relief="flat", text="Find Matches",
                                   font=("Helvetica", 10, "bold"), width=15, command=self.find_matches)
-        matches_button.pack(side="bottom")
+        matches_button.pack(pady=3)
+
+
         #===============================================================================================================
         right_side_frame = card(row2, bg=BG_COLOUR2)
         right_side_frame.pack(side="left", fill="both", expand=True)
@@ -762,9 +767,9 @@ class AdminDashboard(tk.Frame):
                                    borderwidth=1, command=self.ui.show_admin_dashboard)
         programmes_btn.pack(side="left", padx=10, pady=5)
 
-        campus_btn = tk.Button(row1, text="Students", bg=BG_COLOUR, fg="white", font=FONT_BUTTON, relief="flat",
-                               borderwidth=1)
-        campus_btn.pack(side="left", padx=10, pady=5)
+        student_btn = tk.Button(row1, text="Students", bg=BG_COLOUR, fg="white", font=FONT_BUTTON, relief="flat",
+                               borderwidth=1, command=self.ui.show_admin_students)
+        student_btn.pack(side="left", padx=10, pady=5)
 
         row2 = tk.Frame(self, bg=BG_COLOUR)
         row2.pack(fill="both", expand=True)
@@ -1309,6 +1314,55 @@ class AddEditCampus(tk.Frame):
                 self.ui.show_admin_dashboard()
             else:
                 messagebox.showerror("Error", msg)
+
+class AdminStudents(tk.Frame):
+    def __init__(self, parent, ui):
+        super().__init__(parent, bg=BG_COLOUR)
+        self.pack(fill="both", expand=True, pady=(40,40), padx=20)
+        self.ui = ui
+
+        admin = self.ui.user
+        # HEADER
+        InternalHeader(self, ui, f"Admin Dashboard")
+
+        row1 = tk.Frame(self, bg=BG_COLOUR3)
+        row1.pack(fill="x")
+
+        styled_label(row1, f"Welcome {admin.username},", bg=BG_COLOUR3, font=FONT_BODY).pack(side="left", pady=10,
+                                                                                           padx=10)
+        programmes_btn = tk.Button(row1, text="Programmes & Campuses", bg=BG_COLOUR, fg="white", font=FONT_BUTTON, relief="flat",
+                                   borderwidth=1, command=self.ui.show_admin_dashboard)
+        programmes_btn.pack(side="left", padx=10, pady=5)
+
+        campus_btn = tk.Button(row1, text="Students", bg=ACCENT, fg="white", font=FONT_BUTTON, relief="flat",
+                               borderwidth=1, command=self.ui.show_admin_students)
+        campus_btn.pack(side="left", padx=10, pady=5)
+
+        row2 = tk.Frame(self, bg=BG_COLOUR)
+        row2.pack(fill="both", expand=True)
+
+        styled_label(row2, "All Students", font=FONT_BUTTON, fg=ACCENT).pack(anchor="w")
+        separator(row2, bg=ACCENT).pack(fill="x", pady=8, padx=10)
+
+        self.treeview = styled_treeview(row2,['Student ID', 'Name', 'Programme Code', 'Campus Code', 'Year'],['Student ID', 'Name', 'Programme Code', 'Campus Code', 'Year'], [20,120,20,20,10])
+        self.treeview.pack(fill="both", expand=True)
+
+        self.refresh_treeview()
+
+    def refresh_treeview(self):
+        for item in self.treeview.get_children():
+            self.treeview.delete(item)
+
+        all_students = list(self.ui.app.students.values())
+
+        if not all_students:
+            self.treeview.insert("", "end", iid="none", values=("No Students Here", "", "", "", ""))
+            return
+
+        for item in all_students:
+
+            self.treeview.insert("", "end", iid=str(item.student_id),
+                                 values=(f"{item.student_id}", str(item.name), item.programme_code, item.campus_code, item.year_of_study))
 
 if __name__=="__main__":
     StudyBuddyUI()
