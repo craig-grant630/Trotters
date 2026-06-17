@@ -196,12 +196,12 @@
                 "year": 1
             },
             {
-                "module_code": "BNAV12",
+                "module_code": "BNAV11",
                 "name": "Historic Naval Ships",
                 "year": 1
             },
             {
-                "module_code": "BNAV13",
+                "module_code": "BNAV11",
                 "name": "Strategic Naval Decisions",
                 "year": 1
             },
@@ -211,12 +211,12 @@
                 "year": 2
             },
             {
-                "module_code": "BNAV22",
+                "module_code": "BNAV21",
                 "name": "Historical Research",
                 "year": 2
             },
             {
-                "module_code": "BNAV23",
+                "module_code": "BNAV21",
                 "name": "Engineering of Naval Ships",
                 "year": 2
             },

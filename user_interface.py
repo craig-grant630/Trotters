@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+from tkinter.messagebox import showerror
+
 from application import StudyBuddyApp
 from classes import VALID_DAYS, VALID_PERIODS
 
@@ -152,12 +154,12 @@ class StudyBuddyUI:
             "modules": parent_form.module_codes,
             "campuses": parent_form.campus_codes
         }
-
-        # 2. Clear out the frame layout cleanly now that the data is backed up
         self.clear()
-
-        # 3. Load the edit sub-screen
         EditModule(self.container, self, module, parent_form)
+
+    def show_campus_form(self, campus=None):
+        self.clear()
+        AddEditCampus(self.container, self, campus)
 
 # =====================================================================================
 # Header frames used withing main frames of application
@@ -815,10 +817,10 @@ class AdminDashboard(tk.Frame):
         styled_label(rightb_side_frame, "Campus Actions", font=FONT_BUTTON, fg=ACCENT).pack(anchor="w")
         separator(rightb_side_frame, bg=ACCENT).pack(fill="x", pady=8, padx=5)
         camp_add_button = tk.Button(rightb_side_frame, bg=BG_COLOUR3, fg=FG_COLOUR, relief="flat", text="Add Campus",
-                               font=("Helvetica", 10, "bold"), width=15)
+                               font=("Helvetica", 10, "bold"), width=15, command=self.add_campus)
         camp_add_button.pack(pady=3)
         camp_edit_button = tk.Button(rightb_side_frame, bg=BG_COLOUR3, fg=FG_COLOUR, relief="flat", text="Edit Campus",
-                                font=("Helvetica", 10, "bold"), width=15)
+                                font=("Helvetica", 10, "bold"), width=15, command=self.edit_campus)
         camp_edit_button.pack(pady=3)
         camp_delete_button = tk.Button(rightb_side_frame, bg="red", fg=FG_COLOUR, relief="flat", text="Delete Campus",
                                   font=("Helvetica", 10, "bold"), width=15, command=self.delete_campus)
@@ -869,10 +871,14 @@ class AdminDashboard(tk.Frame):
         return self.ui.app.get_campus(campus_code)
 
     def add_campus(self):
-        pass
+        self.ui.show_campus_form()
 
     def edit_campus(self):
-        pass
+        c_obj = self.selection_campus_treeview()
+        if not c_obj:
+            messagebox.showwarning("Warning", "No Campus selected")
+            return
+        self.ui.show_campus_form(c_obj)
 
     def delete_campus(self):
         campus = self.selection_campus_treeview()
@@ -1232,6 +1238,77 @@ class EditModule(tk.Frame):
 
         orig_programme = getattr(self.parent_form, 'programme', None)
         self.ui.show_programme_form(orig_programme, progress_data=self.ui.form_progress)
+
+class AddEditCampus(tk.Frame):
+    def __init__(self, parent, ui, campus=None):
+        # Initialise the frame with background colour
+        super().__init__(parent, bg=BG_COLOUR)
+        self.pack(fill="both", expand=True, pady=(40, 40), padx=20)
+        self.ui = ui
+
+        # Determine mode and button text based on campus presence
+        if campus is not None:
+            self.campus = campus
+            self.mode = "Edit Campus"
+            button_text = "Save Changes"
+        else:
+            self.campus = None
+            self.mode = "Add Campus"
+            button_text = "Add Campus"
+
+        # Centred container frame
+        frame = tk.Frame(self, bg=BG_COLOUR2, padx=40, pady=36)
+        frame.place(relx=0.5, rely=0.5, anchor="center")
+
+        # Header title
+        InternalHeader(frame, ui, self.mode)
+
+        campus_row = tk.Frame(frame, bg=BG_COLOUR2)
+        campus_row.pack(anchor="w", pady=10, expand=True, fill="both")
+
+        styled_label(campus_row, "Campus Code", FONT_BODY, fg=FG_COLOUR2).grid(row=0, column=0, padx=10, pady=5,
+                                                                               sticky="w")
+        self.campus_code = tk.Entry(campus_row, bg=BG_COLOUR3, fg=FG_COLOUR2, relief="flat", font=FONT_BODY, width=27,
+                                    highlightcolor=ACCENT, highlightthickness=1, disabledforeground="black")
+        self.campus_code.grid(row=0, column=1, pady=5)
+
+        styled_label(campus_row, "Campus Name", FONT_BODY, fg=FG_COLOUR2).grid(row=1, column=0, padx=10, pady=5,
+                                                                               sticky="w")
+        self.campus_name = tk.Entry(campus_row, bg=BG_COLOUR3, fg=FG_COLOUR2, relief="flat", font=FONT_BODY, width=27,
+                                    highlightcolor=ACCENT, highlightthickness=1)
+        self.campus_name.grid(row=1, column=1, pady=5)
+
+        if campus is not None:
+            self.campus_code.insert(0, str(campus.campus_code))
+            self.campus_name.insert(0, str(campus.name))
+            self.campus_code.config(state="readonly")
+
+        self.submit_btn = tk.Button(campus_row, text=button_text, bg=ACCENT, fg=FG_COLOUR, relief="flat",
+                                    font=("Helvetica", 10, "bold"), command=self.save_campus)
+        self.submit_btn.grid(row=3, column=0, columnspan=2, pady=15)
+
+    def save_campus(self):
+        code = self.campus_code.get().strip()
+        name = self.campus_name.get().strip()
+
+        if not code or not name:
+            messagebox.showerror("Error", "All campus fields are required.")
+            return
+
+        if self.mode == "Add Campus":
+            valid, msg = self.ui.app.add_campus(str(code), name)
+
+            if valid:
+                self.ui.show_admin_dashboard()
+            else:
+                messagebox.showerror("Error", msg)
+        else:
+            valid, msg = self.ui.app.edit_campus(str(code), name)
+
+            if valid:
+                self.ui.show_admin_dashboard()
+            else:
+                messagebox.showerror("Error", msg)
 
 if __name__=="__main__":
     StudyBuddyUI()

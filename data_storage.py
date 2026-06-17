@@ -152,6 +152,20 @@ class FileHandler:
                 self.read_file(FileHandler.ADMIN_FILE)) <= 0:
             result = True
         return result
+
+    def sample_students_data_needed(self):
+        result = False
+        if not os.path.exists(self.path(FileHandler.STUDENTS_FILE)) or len(
+                self.read_file(FileHandler.STUDENTS_FILE)) <= 0:
+            result = True
+        return result
+
+    def sample_requests_data_needed(self):
+        result = False
+        if not os.path.exists(self.path(FileHandler.REQUESTS_FILE)) or len(
+                self.read_file(FileHandler.REQUESTS_FILE)) <= 0:
+            result = True
+        return result
 #========================================================================================================================
     #Sample Data implemented methods - Required Data (Programmes and Campuses), Testing Data (Students)
     def set_required_campus_data(self):
@@ -225,7 +239,7 @@ class FileHandler:
 
     def set_sample_requests(self):
 
-        requests = {"1":Requests("1", "1000000000","PCK","BAENT",2,"bent11",[{"day" : "Monday"}, {"period":"Afternoon"}])}
+        requests = {"1":Requests("1", "1110000000","PCK","BAENT",1,"bent11",[{"day" : "Monday"}, {"period":"Afternoon"}])}
         self.requests_save(requests)
 
     def set_sample_students(self):

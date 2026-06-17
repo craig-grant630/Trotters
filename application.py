@@ -1,5 +1,6 @@
 from data_storage import FileHandler
-from classes import Student, Requests, Programme, Module
+from classes import Student, Requests, Programme, Module, Campus
+
 
 class StudyBuddyApp:
     def __init__(self):
@@ -12,7 +13,14 @@ class StudyBuddyApp:
             # give required data (programmes)
             self.store.set_required_programme_data()
         if self.store.required_admin_data_needed():
+            # give required data (admin)
             self.store.set_required_admin_data()
+        if self.store.sample_students_data_needed():
+        # give sample data (students)
+            self.store.set_sample_students()
+        if self.store.sample_requests_data_needed():
+            # give sample data (requests)
+            self.store.set_sample_requests()
         # Load all data into memory
         self.programmes = self.store.load_programmes()
         self.campuses = self.store.load_campuses()
@@ -231,6 +239,27 @@ class StudyBuddyApp:
 
         # Return the counts back to the UI
         return True, student_count, request_count
+
+    def add_campus(self, code, name):
+        if code in self.campuses:
+            return False, "ERROR: Campus code already exists"
+        if len(code) != 3:
+            return False, "ERROR: Campus code must be 3 digits"
+        campus = Campus(code, name)
+        self.campuses[code] = campus
+        self.store.requests_save(self.requests)
+
+        return True, "Campus added successfully"
+
+    def edit_campus(self, code, name):
+        campus = self.get_campus(code)
+        if not campus:
+            return False, "Campus not found"
+        campus.name = name
+
+        self.store.save_campuses(self.campuses)
+        return True, "Campus edited successfully"
+
 # Find Match results and score functionality
 #===================================================
     def find_matches(self, request):
@@ -334,7 +363,7 @@ class StudyBuddyApp:
         return None
 
     def programme_add_edit(self, is_edit, old_code, new_code, name, modules_list, campuses_list):
-        if not is_edit and new_code in self.programmes:
+        if new_code in self.programmes:
             return False, f"Programme code '{new_code}' already exists."
 
         # Convert the updated module list to module objects
@@ -362,7 +391,7 @@ class StudyBuddyApp:
         return True, "Saved successfully"
 
     def linked_deletion_and_updates(self, old_code, new_code, compiled_modules, campuses_list):
-        # Directly deletes and updates students and requests based on allowed values
+        # Directly deletes and updates students and requests
         prog_obj = self.programmes.get(old_code)
 
         target_modules = {m.module_code.upper() for m in compiled_modules}
