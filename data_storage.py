@@ -287,12 +287,12 @@ class FileHandler:
 
     def set_sample_students(self):
 
-        students = {"1110000000":Student("1110000000","Craig Grant","BAENT","PCK","3","Belly1234"),
-                    "1111000000":Student("1111000000","Iain Grant","BSCSC","PCK","1","Belly1234"),
-                    "1111100000":Student("1111100000","John Grant","BAMKT","PAR","2","Belly1234"),
-                    "1111110000":Student("1111110000","Lyndsay Grant","BANAV","PCK","1","Belly1234"),
-                    "1111111000":Student("1111111000","Laura Grant","BACAT","PCK","3","Belly1234"),
-                    "1111111100":Student("1111111100","Jamie Lumsden","BAMKT","PCK","2","Belly1234"),
-                    "1111111110":Student("1111111110","Craig Donald","BAENT","PCK","2","Belly1234"),
-                    "1111111111":Student("1111111111","Lewis McCreadie","BANAV","PCK","1","Belly1234")}
+        students = {"1110000000":Student("1110000000","Craig Grant","BAENT","PCK","3","Password123"),
+                    "1111000000":Student("1111000000","Iain Grant","BSCSC","PCK","1","Password123"),
+                    "1111100000":Student("1111100000","John Grant","BAMKT","PAR","2","Password123"),
+                    "1111110000":Student("1111110000","Lyndsay Grant","BANAV","PCK","1","Password123"),
+                    "1111111000":Student("1111111000","Laura Grant","BACAT","PCK","3","Password123"),
+                    "1111111100":Student("1111111100","Jamie Lumsden","BAMKT","PCK","2","Password123"),
+                    "1111111110":Student("1111111110","Craig Donald","BAENT","PCK","2","Password123"),
+                    "1111111111":Student("1111111111","Lewis McCreadie","BANAV","PCK","1","Password123")}
         self.save_students(students)
