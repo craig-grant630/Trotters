@@ -1,21 +1,18 @@
 import unittest
 import os
 import shutil
-import sys
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from data_storage import FileHandler
 from application import StudyBuddyApp
 
-TEST_DATA = "/tmp/test_data_app"
+TEST_DATA = "/temp/test_data_app"
 
 
-class TestAuthentication(unittest.TestCase):
+class BaseTestConfig(unittest.TestCase):
     def setUp(self):
         if os.path.exists(TEST_DATA):
             shutil.rmtree(TEST_DATA)
 
         self.app = StudyBuddyApp.__new__(StudyBuddyApp)
-        from data_storage import FileHandler
 
         self.app.store = FileHandler(TEST_DATA)
         self.app.store.set_required_campus_data()
@@ -34,6 +31,9 @@ class TestAuthentication(unittest.TestCase):
     def tearDown(self):
         if os.path.exists(TEST_DATA):
             shutil.rmtree(TEST_DATA)
+
+
+class TestAuthentication(BaseTestConfig):
     def test_valid_login(self):
         ok, result = self.app.authenticate("1110000000", "Password123")
         self.assertTrue(ok)
@@ -61,32 +61,7 @@ class TestAuthentication(unittest.TestCase):
         self.assertFalse(ok)
 
 
-class TestRegisterValidation(unittest.TestCase):
-    def setUp(self):
-        if os.path.exists(TEST_DATA):
-            shutil.rmtree(TEST_DATA)
-
-        self.app = StudyBuddyApp.__new__(StudyBuddyApp)
-        from data_storage import FileHandler
-
-        self.app.store = FileHandler(TEST_DATA)
-        self.app.store.set_required_campus_data()
-        self.app.store.set_required_programme_data()
-        self.app.store.set_required_admin_data()
-        self.app.store.set_sample_students()
-        self.app.store.set_sample_requests()
-        self.app.programmes = self.app.store.load_programmes()
-        self.app.campuses = self.app.store.load_campuses()
-        self.app.students = self.app.store.load_students()
-        self.app.requests = self.app.store.load_requests()
-        self.app.admin = self.app.store.load_admin()
-        self.app.all_modules = [m for p in self.app.programmes.values() for m in p.modules]
-        self.app.all_module_codes = [m.module_code for m in self.app.all_modules]
-
-    def tearDown(self):
-        if os.path.exists(TEST_DATA):
-            shutil.rmtree(TEST_DATA)
-
+class TestRegisterValidation(BaseTestConfig):
     def test_duplicate_id_rejected(self):
         ok, msg = self.app.check_register_credentials(
             "1110000000", "pass", "pass", "PCK", "BAENT", "1", "Name")
@@ -116,32 +91,7 @@ class TestRegisterValidation(unittest.TestCase):
         self.assertIsNone(msg)
 
 
-class TestRequestCRUD(unittest.TestCase):
-    def setUp(self):
-        if os.path.exists(TEST_DATA):
-            shutil.rmtree(TEST_DATA)
-
-        self.app = StudyBuddyApp.__new__(StudyBuddyApp)
-        from data_storage import FileHandler
-
-        self.app.store = FileHandler(TEST_DATA)
-        self.app.store.set_required_campus_data()
-        self.app.store.set_required_programme_data()
-        self.app.store.set_required_admin_data()
-        self.app.store.set_sample_students()
-        self.app.store.set_sample_requests()
-        self.app.programmes = self.app.store.load_programmes()
-        self.app.campuses = self.app.store.load_campuses()
-        self.app.students = self.app.store.load_students()
-        self.app.requests = self.app.store.load_requests()
-        self.app.admin = self.app.store.load_admin()
-        self.app.all_modules = [m for p in self.app.programmes.values() for m in p.modules]
-        self.app.all_module_codes = [m.module_code for m in self.app.all_modules]
-
-    def tearDown(self):
-        if os.path.exists(TEST_DATA):
-            shutil.rmtree(TEST_DATA)
-
+class TestRequestCRUD(BaseTestConfig):
     def test_add_request_valid(self):
         ok, result = self.app.add_request(
             "1110000000", "BAENT", "PCK", "BENT31", [{"day": "Monday", "period": "Morning"}]
@@ -154,10 +104,8 @@ class TestRequestCRUD(unittest.TestCase):
         self.assertFalse(ok)
 
     def test_add_request_wrong_module_for_year(self):
-        # Craig is year 3; BSCS11 is year 1 CS — wrong programme + year
         ok, msg = self.app.add_request(
-            "1110000000", "BAENT", "PCK", "BSCS11", [{"day": "Monday", "period": "Morning"}]
-        )
+            "1110000000", "BAENT", "PCK", "BSCS11", [{"day": "Monday", "period": "Morning"}])
         self.assertFalse(ok)
 
     def test_delete_own_request(self):
@@ -177,32 +125,7 @@ class TestRequestCRUD(unittest.TestCase):
             self.assertEqual(r.student_id, "1110000000")
 
 
-class TestMatchingAlgorithm(unittest.TestCase):
-    def setUp(self):
-        if os.path.exists(TEST_DATA):
-            shutil.rmtree(TEST_DATA)
-
-        self.app = StudyBuddyApp.__new__(StudyBuddyApp)
-        from data_storage import FileHandler
-
-        self.app.store = FileHandler(TEST_DATA)
-        self.app.store.set_required_campus_data()
-        self.app.store.set_required_programme_data()
-        self.app.store.set_required_admin_data()
-        self.app.store.set_sample_students()
-        self.app.store.set_sample_requests()
-        self.app.programmes = self.app.store.load_programmes()
-        self.app.campuses = self.app.store.load_campuses()
-        self.app.students = self.app.store.load_students()
-        self.app.requests = self.app.store.load_requests()
-        self.app.admin = self.app.store.load_admin()
-        self.app.all_modules = [m for p in self.app.programmes.values() for m in p.modules]
-        self.app.all_module_codes = [m.module_code for m in self.app.all_modules]
-
-    def tearDown(self):
-        if os.path.exists(TEST_DATA):
-            shutil.rmtree(TEST_DATA)
-
+class TestMatchingAlgorithm(BaseTestConfig):
     def test_score_different_modules_returns_zero(self):
         from classes import Requests
         r1 = Requests(99, "A", "PCK", "BAENT", "3", "BENT31")
@@ -246,31 +169,7 @@ class TestMatchingAlgorithm(unittest.TestCase):
             self.assertEqual(m["request"].module_code, source.module_code)
 
 
-class TestCampusDelete(unittest.TestCase):
-    def setUp(self):
-        if os.path.exists(TEST_DATA):
-            shutil.rmtree(TEST_DATA)
-
-        self.app = StudyBuddyApp.__new__(StudyBuddyApp)
-        from data_storage import FileHandler
-
-        self.app.store = FileHandler(TEST_DATA)
-        self.app.store.set_required_campus_data()
-        self.app.store.set_required_programme_data()
-        self.app.store.set_required_admin_data()
-        self.app.store.set_sample_students()
-        self.app.store.set_sample_requests()
-        self.app.programmes = self.app.store.load_programmes()
-        self.app.campuses = self.app.store.load_campuses()
-        self.app.students = self.app.store.load_students()
-        self.app.requests = self.app.store.load_requests()
-        self.app.admin = self.app.store.load_admin()
-        self.app.all_modules = [m for p in self.app.programmes.values() for m in p.modules]
-        self.app.all_module_codes = [m.module_code for m in self.app.all_modules]
-
-    def tearDown(self):
-        if os.path.exists(TEST_DATA):
-            shutil.rmtree(TEST_DATA)
+class TestCampusDelete(BaseTestConfig):
 
     def test_delete_campus_removes_campus(self):
         ok, s_count, r_count = self.app.delete_campus("PCK")
@@ -299,3 +198,5 @@ class TestCampusDelete(unittest.TestCase):
         baent_after = sum(1 for s in self.app.students.values() if s.programme_code == "BAENT")
         self.assertEqual(baent_after, 0)
         self.assertGreater(baent_before, 0)
+
+# Build more tests for Programmes and Students CRUD

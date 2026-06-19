@@ -5,7 +5,7 @@
         "programme_code": "BAENT",
         "campus_code": "PCK",
         "year_of_study": "3",
-        "password": "Belly1234"
+        "password": "Password123"
     },
     {
         "student_id": "1111000000",
@@ -13,7 +13,7 @@
         "programme_code": "BSCSC",
         "campus_code": "PCK",
         "year_of_study": "1",
-        "password": "Belly1234"
+        "password": "Password123"
     },
     {
         "student_id": "1111100000",
@@ -21,7 +21,7 @@
         "programme_code": "BAMKT",
         "campus_code": "PAR",
         "year_of_study": "2",
-        "password": "Belly1234"
+        "password": "Password123"
     },
     {
         "student_id": "1111110000",
@@ -29,7 +29,7 @@
         "programme_code": "BANAV",
         "campus_code": "PCK",
         "year_of_study": "1",
-        "password": "Belly1234"
+        "password": "Password123"
     },
     {
         "student_id": "1111111000",
@@ -37,7 +37,7 @@
         "programme_code": "BACAT",
         "campus_code": "PCK",
         "year_of_study": "3",
-        "password": "Belly1234"
+        "password": "Password123"
     },
     {
         "student_id": "1111111100",
@@ -45,7 +45,7 @@
         "programme_code": "BAMKT",
         "campus_code": "PCK",
         "year_of_study": "2",
-        "password": "Belly1234"
+        "password": "Password123"
     },
     {
         "student_id": "1111111110",
@@ -53,7 +53,7 @@
         "programme_code": "BAENT",
         "campus_code": "PCK",
         "year_of_study": "2",
-        "password": "Belly1234"
+        "password": "Password123"
     },
     {
         "student_id": "1111111111",
@@ -61,6 +61,6 @@
         "programme_code": "BANAV",
         "campus_code": "PCK",
         "year_of_study": "1",
-        "password": "Belly1234"
+        "password": "Password123"
     }
 ]
