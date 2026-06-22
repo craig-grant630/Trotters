@@ -1,3 +1,5 @@
+import bcrypt
+
 from data_storage import FileHandler
 from classes import Student, Requests, Programme, Module, Campus
 
@@ -70,6 +72,7 @@ class StudyBuddyApp:
     def add_student(self, student_id, name, password1, campus_code, programme_code, year):
 
         student = Student(student_id, name, programme_code, campus_code, year, password1)
+        student.password = student.hash_password(password1)
         self.students[student_id] = student
         self.store.save_students(self.students)
 
@@ -80,7 +83,7 @@ class StudyBuddyApp:
             return False, "WARNING:  Student ID does not exist within the system."
         if not password:
             return False, "WARNING:  Password is empty. Please enter."
-        if student.password != password:
+        if not bcrypt.checkpw(password.encode("utf-8"), student.password.encode("utf-8")):
             return False, "WARNING:  Password does not match."
         else:
             return True, student
@@ -92,7 +95,7 @@ class StudyBuddyApp:
             return False, "WARNING:  Administrator does not exist within the system."
         if not password:
             return False, "WARNING:  Password is empty. Please enter."
-        if admin.password != password:
+        if not bcrypt.checkpw(password.encode("utf-8"), admin.password.encode("utf-8")):
             return False, "WARNING:  Password does not match."
         else:
             return True, admin
@@ -111,8 +114,6 @@ class StudyBuddyApp:
     def check_update_credentials(self, student_id, name, password, campus_code, programme_code, year):
         if not name:
             return False, "WARNING: \n Name must be provided."
-        if not password:
-            return False, "WARNING: \n Password is empty. Please enter."
         if not programme_code:
             return False, "WARNING: \n Program Code must be provided."
         if not campus_code:
@@ -132,11 +133,11 @@ class StudyBuddyApp:
         student = self.students.get(student_id)
         if student:
             student.name = name
-            student.password = password
+            if password:
+                student.password = student.hash_password(password)
             student.programme_code = programme_code
             student.campus_code = campus_code
             student.year_of_study = year
-
             self.store.save_students(self.students)
             return True
         return False

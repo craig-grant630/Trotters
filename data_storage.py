@@ -235,6 +235,10 @@ class FileHandler:
 
     def set_required_admin_data(self):
         admin = {"Admin":Admin("Admin", "1234")}
+
+        for a in admin.values():
+            a.password = a.hash_password(a.password)
+
         self.admin_save(admin)
 
     def set_sample_requests(self):
@@ -295,4 +299,7 @@ class FileHandler:
                     "1111111100":Student("1111111100","Jamie Lumsden","BAMKT","PCK","2","Password123"),
                     "1111111110":Student("1111111110","Craig Donald","BAENT","PCK","2","Password123"),
                     "1111111111":Student("1111111111","Lewis McCreadie","BANAV","PCK","1","Password123")}
+        for student in students.values():
+            student.password = student.hash_password(student.password)
+
         self.save_students(students)

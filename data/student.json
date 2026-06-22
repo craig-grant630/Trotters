@@ -5,7 +5,7 @@
         "programme_code": "BAENT",
         "campus_code": "PCK",
         "year_of_study": "3",
-        "password": "Password123"
+        "password": "$2b$12$Js1r81GZQu2KgY8PhcKRleBabmyeNl50j3SRDS1SpkKAw5RWyRTOm"
     },
     {
         "student_id": "1111000000",
@@ -13,7 +13,7 @@
         "programme_code": "BSCSC",
         "campus_code": "PCK",
         "year_of_study": "1",
-        "password": "Password123"
+        "password": "$2b$12$Ik60EW72Q133PITIPvpnB.uKNS74mYXPweN/K5xIaO5nCs/UU1Liy"
     },
     {
         "student_id": "1111100000",
@@ -21,7 +21,7 @@
         "programme_code": "BAMKT",
         "campus_code": "PAR",
         "year_of_study": "2",
-        "password": "Password123"
+        "password": "$2b$12$ncTz6kEX..IdEH4Q5tOGgeGHiXf7xL3I5georzoae5V.w0/P5KJRe"
     },
     {
         "student_id": "1111110000",
@@ -29,7 +29,7 @@
         "programme_code": "BANAV",
         "campus_code": "PCK",
         "year_of_study": "1",
-        "password": "Password123"
+        "password": "$2b$12$2XQxxi2xUnq.Tr51puygL.LyNnUVCa0FJs1RxUpWJYNQSUpOyJ742"
     },
     {
         "student_id": "1111111000",
@@ -37,7 +37,7 @@
         "programme_code": "BACAT",
         "campus_code": "PCK",
         "year_of_study": "3",
-        "password": "Password123"
+        "password": "$2b$12$CvMzqmjxwuTLxNq7Xaku1uDVCk1gXY86w5s832gqBEbzAXXV02V1q"
     },
     {
         "student_id": "1111111100",
@@ -45,7 +45,7 @@
         "programme_code": "BAMKT",
         "campus_code": "PCK",
         "year_of_study": "2",
-        "password": "Password123"
+        "password": "$2b$12$mcsSYU0EQ/ocDt8wwyo44.3ud2RILA0dV5MehXqj7lIAj70fsntbC"
     },
     {
         "student_id": "1111111110",
@@ -53,7 +53,7 @@
         "programme_code": "BAENT",
         "campus_code": "PCK",
         "year_of_study": "2",
-        "password": "Password123"
+        "password": "$2b$12$YJPjO3Mk05sZTWUUFA6FjuUk5rqMS.RxO2IHg.PCwRyHnOLGaVu2m"
     },
     {
         "student_id": "1111111111",
@@ -61,6 +61,14 @@
         "programme_code": "BANAV",
         "campus_code": "PCK",
         "year_of_study": "1",
-        "password": "Password123"
+        "password": "$2b$12$OBRv2iHFhBVJMe2biMEYkO2m/Y9/MxsI1YEkVwWC4F2YgAjA9Ocfe"
+    },
+    {
+        "student_id": "2000000000",
+        "name": "Connor Jam",
+        "programme_code": "BACAT",
+        "campus_code": "NYC",
+        "year_of_study": "1",
+        "password": "$2b$12$1JebAXdvwxxVO0P2Q.4lMuqtIEvDTD5ycLAyPAFHGGU6TgwYkwqwS"
     }
 ]

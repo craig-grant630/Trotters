@@ -6,7 +6,7 @@ from application import StudyBuddyApp
 
 TEST_DATA = "/temp/test_data_app"
 
-
+# https://docs.python.org/3/library/unittest.html
 class BaseTestConfig(unittest.TestCase):
     def setUp(self):
         if os.path.exists(TEST_DATA):

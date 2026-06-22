@@ -1,6 +1,10 @@
 # https://dev.to/dpills/python-secure-password-management-hashing-and-encryption--1246 Encryption of passwords for later
 # https://blog.devgenius.io/mastering-python-dictionaries-30896dda7568
+
+import bcrypt
+
 class Student:
+    """Represents a Student object"""
     def __init__(self, student_id, name, programme_code, campus_code, year_of_study, password):
         self.student_id = student_id
         self.name = name
@@ -20,6 +24,11 @@ class Student:
 
     def __repr__(self):
         return f"Student: ({self.student_id}), {self.name}"
+
+    @staticmethod
+    def hash_password(password):
+        password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        return password_hash
 
 class Campus:
     def __init__(self, campus_code, name):
@@ -151,3 +160,8 @@ class Admin:
     @classmethod
     def from_dict(cls, data):
         return cls(data['username'], data['password'])
+
+    @staticmethod
+    def hash_password(password):
+        password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        return password_hash

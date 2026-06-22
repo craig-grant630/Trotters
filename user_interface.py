@@ -700,7 +700,7 @@ class EditStudent(tk.Frame):
         fields = [
             ("Student ID (10 digits)", False),
             ("Full Name", False),
-            ("Password", True),
+            ("Set New Password", True),
         ]
         self.entries = {}
         for label, show in fields:
@@ -722,7 +722,6 @@ class EditStudent(tk.Frame):
         self.row2.pack(fill="x")
         self.row2.grid_columnconfigure(0, minsize=180, uniform="reg_col")
 
-        # Row 0: Programme
         prog_options = []
         for p in self.ui.app.programmes.values():
             prog_options.append(f"{p.programme_code} - {p.name}")
@@ -757,7 +756,6 @@ class EditStudent(tk.Frame):
             # Fill in all the students details
             self.entries["Student ID (10 digits)"].insert(0, str(student.student_id))
             self.entries["Full Name"].insert(0, str(student.name))
-            self.entries["Password"].insert(0, str(student.password))
 
             self.entries["Student ID (10 digits)"].config(state="disabled")
             self.programme_drop.config(state="disabled")
@@ -782,7 +780,9 @@ class EditStudent(tk.Frame):
     def save_student_changes(self):
         student = self.ui.user
         name = self.entries["Full Name"].get().strip()
-        password = self.entries["Password"].get()
+        password = None
+        if self.entries["Set New Password"].get():
+            password = self.entries["Set New Password"].get()
         prog_sel = self.programme_drop.get()
         camp_sel = self.campus_drop.get()
 
