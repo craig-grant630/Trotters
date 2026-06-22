@@ -116,22 +116,22 @@
                 "year": 1
             },
             {
-                "module_code": "BCAT12",
+                "module_code": "BCAT21",
                 "name": "Managing Accounting",
                 "year": 2
             },
             {
-                "module_code": "BCAT12",
+                "module_code": "BCAT22",
                 "name": "Financial Accounting",
                 "year": 2
             },
             {
-                "module_code": "BCAT12",
+                "module_code": "BCAT23",
                 "name": "Tax Fundamentals",
                 "year": 2
             },
             {
-                "module_code": "BCAT12",
+                "module_code": "BCAT31",
                 "name": "Accounting Project",
                 "year": 3
             }

@@ -202,10 +202,10 @@ class FileHandler:
         bacat_modules = [Module("BCAT11", "Introduction to Accounting", 1),
                          Module("BCAT12", "Report Planning", 1),
                          Module("BCAT12", "Business Essential", 1),
-                         Module("BCAT12", "Managing Accounting", 2),
-                         Module("BCAT12", "Financial Accounting", 2),
-                         Module("BCAT12", "Tax Fundamentals", 2),
-                         Module("BCAT12", "Accounting Project", 3),]
+                         Module("BCAT21", "Managing Accounting", 2),
+                         Module("BCAT22", "Financial Accounting", 2),
+                         Module("BCAT23", "Tax Fundamentals", 2),
+                         Module("BCAT31", "Accounting Project", 3),]
         # bccs modules - BS Computing Science
         bscs_modules = [Module("BSCS11", "Introduction to Programming", 1),
                          Module("BSCS12", "Introduction to Software Engineering", 1),
@@ -264,11 +264,11 @@ class FileHandler:
             "11": Requests(11, "1111110000", "PCK", "BANAV", "1", "BNAV11", [{"day": "Tuesday", "period": "Evening"}]),
             "12": Requests(12, "1111110000", "PCK", "BANAV", "1", "BNAV11", [{"day": "Thursday", "period": "Morning"}]),
 
-            # 5. Laura Grant - BACAT, PCK, Year 3
-            "13": Requests(13, "1111111000", "PCK", "BACAT", "3", "BCAT12",
+            # 5. Laura Grant - BACAT, PCK, Year 1
+            "13": Requests(13, "1111111000", "PCK", "BACAT", "1", "BCAT12",
                            [{"day": "Wednesday", "period": "Morning"}]),
-            "14": Requests(14, "1111111000", "PCK", "BACAT", "3", "BCAT12", [{"day": "Friday", "period": "Afternoon"}]),
-            "15": Requests(15, "1111111000", "PCK", "BACAT", "3", "BCAT12", [{"day": "Monday", "period": "Evening"}]),
+            "14": Requests(14, "1111111000", "PCK", "BACAT", "1", "BCAT12", [{"day": "Friday", "period": "Afternoon"}]),
+            "15": Requests(15, "1111111000", "PCK", "BACAT", "1", "BCAT12", [{"day": "Monday", "period": "Evening"}]),
 
             # 6. Jamie Lumsden - BAMKT, PCK, Year 2
             "16": Requests(16, "1111111100", "PCK", "BAMKT", "2", "BMKT21",
@@ -295,7 +295,7 @@ class FileHandler:
                     "1111000000":Student("1111000000","Iain Grant","BSCSC","PCK","1","Password123"),
                     "1111100000":Student("1111100000","John Grant","BAMKT","PAR","2","Password123"),
                     "1111110000":Student("1111110000","Lyndsay Grant","BANAV","PCK","1","Password123"),
-                    "1111111000":Student("1111111000","Laura Grant","BACAT","PCK","3","Password123"),
+                    "1111111000":Student("1111111000","Laura Grant","BACAT","PCK","1","Password123"),
                     "1111111100":Student("1111111100","Jamie Lumsden","BAMKT","PCK","2","Password123"),
                     "1111111110":Student("1111111110","Craig Donald","BAENT","PCK","2","Password123"),
                     "1111111111":Student("1111111111","Lewis McCreadie","BANAV","PCK","1","Password123")}
