@@ -246,7 +246,7 @@ class FileHandler:
         requests = {
             # 1. Craig Grant - BAENT, Year 3
             "1": Requests(1, "1110000000", "PCK", "BAENT", "3", "BENT31", [{"day": "Monday", "period": "Afternoon"}]),
-            "2": Requests(2, "1110000000", "NYC", "BAENT", "3", "BENT32", [{"day": "Wednesday", "period": "Morning"}]),
+            "2": Requests(2, "1110000000", "NYC", "BAENT", "3", "BENT31", [{"day": "Wednesday", "period": "Morning"}]),
             "3": Requests(3, "1110000000", "PAR", "BAENT", "3", "BENT31", [{"day": "Friday", "period": "Evening"}]),
 
             # 2. Iain Grant - BSCSC, Year 1
